@@ -24,6 +24,8 @@ BOOL A_KeyIsDown = false;
 BOOL S_KeyIsDown = false;
 BOOL D_KeyIsDown = false;
 
+int GitTest;
+
 void RenderScene(void)	//1초에 최소 60번 이상 출력되어야 하는 함수
 {
 	if (prev_render_time == 0)
