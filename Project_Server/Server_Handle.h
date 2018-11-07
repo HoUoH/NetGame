@@ -1,5 +1,11 @@
 #pragma once
 #include "pch.h"
 
-HANDLE SREvent;
-HANDLE ScnMgrEvent[PlAYER_NUM];
+HANDLE hSREvent;
+HANDLE hSRThread[PlAYER_NUM];
+
+HANDLE hScnMgrEvent;
+HANDLE hScnMgrThread;
+
+HANDLE hServerMainEvent;
+HANDLE hServerMainThread;

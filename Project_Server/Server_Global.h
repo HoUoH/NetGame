@@ -1,6 +1,9 @@
 #pragma once
 #include "pch.h"
 
+#define SERVERPORT 9000
+#define BUFSIZE    512
+
 #define PlAYER_NUM 4
 #define BALL_NUM 10
 #define MAX_OBJECTS PlAYER_NUM + BALL_NUM
@@ -15,21 +18,27 @@
 #define PLAYER_SIZE 25
 #define BALL_SIZE 15
 
+// ServerMainThread
+bool isExistPlayer[PlAYER_NUM] = { false };
+int playerIndex = 0;
 
-
-
+#pragma pack(1)
 struct sendData {
 	int kind;
 	float posX, posY;
 	bool isVisible;
 }typedef sendData;
+#pragma pack()
 
+#pragma pack(1)
 struct recvData {
 	float posX, posY;
 	float velX, velY;
 	u_char specialKey;	
 }typedef recvData;
+#pragma pack()
 
+#pragma pack(1)
 struct objects {
 	int kind;					//종류
 	float posX, posY;			//위치
@@ -45,3 +54,4 @@ struct objects {
 	float elapsed_time_in_sec;	//경과시간
 	bool isVisible;				//표시여부
 }typedef objects;
+#pragma pack()

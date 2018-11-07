@@ -1,0 +1,23 @@
+#pragma once
+#include "ScnMgrThread.h"
+#include "Server_Global.h"
+#include "Server_Handle.h"
+#include "ServerMainThread.h"
+
+// 윈도우 프로시저
+LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
+// 편집 컨트롤 출력 함수
+void DisplayText(const char *fmt, ...);
+
+DWORD WINAPI SendRecvThread(LPVOID arg);
+DWORD WINAPI ScnMgrThread(LPVOID arg);
+
+
+HINSTANCE hInst; // 인스턴스 핸들
+HWND hEdit; // 편집 컨트롤
+CRITICAL_SECTION cs; // 임계 영역
+
+
+
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
+	LPSTR lpCmdLine, int nCmdShow);

@@ -8,9 +8,9 @@ float minVelocity = -500.f;
 
 object::object()
 {
-	posX = 0;	posY = 0;
-	sizeX = 0;	sizeY = 0;
-	accX = 0;	accY = 0;
+	posX = 0;   posY = 0;
+	sizeX = 0;   sizeY = 0;
+	accX = 0;   accY = 0;
 
 }
 
@@ -37,14 +37,14 @@ void object::Update(float elapsed_time_in_sec)
 	}
 	else { // 마찰력에 의한 속도 변화
 
-		//방향 구하기 정규화
+	   //방향 구하기 정규화
 		frictionX = -friction * velX / VelMag;
 		frictionY = -friction * velY / VelMag;
 
 		float frictionAccX = frictionX / mass;
 		float frictionAccY = frictionY / mass;
 
-		float newVelX = velX + frictionAccX * elapsed_time_in_sec;	// 현재 속도 + (마찰력에 의한 속도 : 실질적으로 현재속도 반대방향)
+		float newVelX = velX + frictionAccX * elapsed_time_in_sec;   // 현재 속도 + (마찰력에 의한 속도 : 실질적으로 현재속도 반대방향)
 		float newVelY = velY + frictionAccY * elapsed_time_in_sec;
 
 		if (newVelX*velX < 0.f)
@@ -201,55 +201,6 @@ bool object::GetIsVisible()
 	return isVisible;
 }
 
-void object::ApplyForce(float ForceX, float ForceY, float elapsed_time_in_sec)
-{
-	//가속도 계산 힘/질량
-	accX = ForceX / mass;
-	accY = ForceY / mass;
-
-	//속도 계산
-	velX = velX + accX * elapsed_time_in_sec;
-	velY = velY + accY * elapsed_time_in_sec;
-
-	accX = 0;
-	accY = 0;
-
-}
-
-void object::BreakMovement(bool W_KeyIsDown, bool S_KeyIsDown, bool D_KeyIsDown, bool A_KeyIsDown, float elapsed_time_in_sec)
-{
-	if (!W_KeyIsDown)
-	{
-		if (velY > 0)
-		{
-			velY = velY + (frictionY * elapsed_time_in_sec / (mass *0.01f));
-		}
-
-	}
-	if (!S_KeyIsDown)
-	{
-		if (velY < 0)
-		{
-			velY = velY + (frictionY * elapsed_time_in_sec / (mass *0.01f));
-		}
-	}
-	if (!D_KeyIsDown)
-	{
-		if (velX > 0)
-		{
-			velX = velX + (frictionX * elapsed_time_in_sec / (mass *0.01f));
-
-		}
-	}
-	if (!A_KeyIsDown)
-	{
-		if (velX < 0)
-		{
-			velX = velX + (frictionX * elapsed_time_in_sec / (mass *0.01f));
-		}
-	}
-
-}
 
 void object::PingpongBall() {
 	velX = rand() % 6000 - 3000;

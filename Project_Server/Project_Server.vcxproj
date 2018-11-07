@@ -143,13 +143,18 @@
     <ClCompile Include="object.cpp" />
     <ClCompile Include="pch.cpp" />
     <ClCompile Include="ScnMgrThread.cpp" />
-    <ClCompile Include="Server.cpp" />
+    <ClCompile Include="SendRecvThread.cpp" />
+    <ClCompile Include="ServerWinAPI.cpp" />
+    <ClCompile Include="ServerMainThread.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Collision.h" />
     <ClInclude Include="object.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="ScnMgrThread.h" />
+    <ClInclude Include="SendRecvThread.h" />
+    <ClInclude Include="ServerMainThread.h" />
+    <ClInclude Include="ServerWinAPI.h" />
     <ClInclude Include="Server_Global.h" />
     <ClInclude Include="Server_Handle.h" />
   </ItemGroup>
