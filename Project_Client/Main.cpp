@@ -8,6 +8,7 @@
 #define SERVERPORT 9000
 #define BUFSIZE    512
 
+static char IpAdress[10];
 HINSTANCE g_hInst;
 LPCTSTR lpszClass = "Window Class Name";
 
@@ -67,7 +68,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 }
 BOOL CALLBACK Dlg1Proc(HWND hdlg, UINT iMsg, WPARAM wParam, LPARAM lParam) {
-	static char IpAdress[10];
 	static char print[30];
 	static HWND hText;
 
@@ -101,6 +101,7 @@ BOOL CALLBACK Dlg1Proc(HWND hdlg, UINT iMsg, WPARAM wParam, LPARAM lParam) {
 	return 0;
 
 }
+
 LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam) {
 	HWND hdlg;
 	switch (iMessage) {
@@ -136,6 +137,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 
 
 // 대화상자 프로시저
+/*
 BOOL CALLBACK DlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	switch(uMsg){
@@ -163,6 +165,7 @@ BOOL CALLBACK DlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	}
 	return FALSE;
 }
+*/
 
 // 편집 컨트롤 출력 함수
 void DisplayText(char *fmt, ...)
@@ -245,7 +248,7 @@ DWORD WINAPI ClientMain(LPVOID arg)
 	SOCKADDR_IN serveraddr;
 	ZeroMemory(&serveraddr, sizeof(serveraddr));
 	serveraddr.sin_family = AF_INET;
-	serveraddr.sin_addr.s_addr = inet_addr(SERVERIP);
+	serveraddr.sin_addr.s_addr = inet_addr(IpAdress);
 	serveraddr.sin_port = htons(SERVERPORT);
 	retval = connect(sock, (SOCKADDR *)&serveraddr, sizeof(serveraddr));
 	if(retval == SOCKET_ERROR) err_quit("connect()");
