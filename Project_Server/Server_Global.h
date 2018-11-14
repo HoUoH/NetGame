@@ -1,5 +1,5 @@
 #pragma once
-#include "pch.h"
+//#include "pch.h"
 
 #define SERVERPORT 9000
 #define BUFSIZE    512
@@ -17,10 +17,6 @@
 
 #define PLAYER_SIZE 25
 #define BALL_SIZE 15
-
-// ServerMainThread
-bool isExistPlayer[PlAYER_NUM] = { false };
-int playerIndex = 0;
 
 #pragma pack(1)
 struct sendData {

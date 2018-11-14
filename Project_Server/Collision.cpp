@@ -1,9 +1,11 @@
 #include "pch.h"
-
 #include "Collision.h"
+#include "Server_Global.h"
+//#include "object.h"
 
 float e = 1.f;	// Åº¼º °è¼ö
 
+/*
 bool CollisionCheck(object * oA, object * oB)
 {
 
@@ -26,7 +28,9 @@ bool CollisionCheck(object * oA, object * oB)
 
 	return true;
 }
+*/
 
+/*
 bool CollisionCheck(object *oA, float posx, float posy)
 {
 
@@ -50,7 +54,42 @@ bool CollisionCheck(object *oA, float posx, float posy)
 	//printf("°ãÃÄ\n");
 	return true;
 }
+*/
 
+//object vs postion ver
+bool CollisionCheck(const float& oA_rad, const float& oA_x, const float& oA_y, float posx, float posy)
+{
+
+	float colLenLimit = oA_rad / 2 + PLAYER_SIZE / 2;
+	float distBtwPoints = sqrt((posx - oA_x)*(posx - oA_x) + (posy - oA_y)*(posy - oA_y));
+
+
+	if (colLenLimit <= distBtwPoints) {
+		//printf("¾È°ãÃÄ\n");
+		return false;
+	}
+
+	//printf("°ãÃÄ\n");
+	return true;
+}
+
+//object vs object ver
+bool CollisionCheck(const float& oA_rad, const float& oA_x, const float& oA_y, 
+	const float& oB_rad, const float& oB_x, const float& oB_y)
+{
+
+	float colLenLimit = oA_rad / 2 + oB_rad / 2;
+	float distBtwPoints = sqrt((oA_x - oB_x)*(oA_x - oB_x) + (oA_y - oB_y)*(oA_y - oB_y));
+
+
+	if (colLenLimit <= distBtwPoints)
+		return false;
+
+	return true;
+}
+
+/*
+ÀÌ ºÎºÐÀº ScnMgr·Î ³Ñ¾î°¨
 void CollisionReaction(class object* oA, class object* oB)
 {
 	int oA_Kind, oB_Kind = 0;
@@ -114,7 +153,9 @@ void CollisionReaction(class object* oA, class object* oB)
 
 
 }
+*/
 
+/*
 void WallCollision(class object* obj)
 {
 	float posX, posY = 0;
@@ -139,7 +180,24 @@ void WallCollision(class object* obj)
 
 
 }
+*/
 
+char WallCollision(const float& posX, const float& posY, const float& rad, const float& height)
+{
+	if (posX - rad / 2 <= -WINDOW_SIZEX / 2 || posX + rad / 2 >= WINDOW_SIZEX / 2) {
+		//Right or Left
+		return 'r';
+	}
+	if (posY - rad / 2 <= -WINDOW_SIZEY / 2 || posY + rad / 2 >= WINDOW_SIZEY / 2) {
+		//Up or Down
+		return 'u';
+	}
+
+	//return none
+	return 'n';
+}
+
+/*
 bool JoinCollision(class object* obj, float posx, float posy) {
 	for (int i = 0; i < MAX_OBJECTS; ++i) {
 		if (obj[i].GetIsVisible() == true) {
@@ -148,6 +206,14 @@ bool JoinCollision(class object* obj, float posx, float posy) {
 		}
 	}
 
+	//printf("¾È°ãÃÄ\n");
+	return false;
+}
+*/
+
+bool JoinCollision(const float& obj_Rad ,const float& obj_PosX, const float& obj_PosY, const float& posx, const float& posy) {
+	if (CollisionCheck(obj_Rad, obj_PosX, obj_PosY, posx, posy))
+		return true;
 	//printf("¾È°ãÃÄ\n");
 	return false;
 }

@@ -1,6 +1,8 @@
-#include "SendRecvThread.h"
+/*
+#include "pch.h"
+#include "ServerWinAPI.h"
 #include "Server_Global.h"
-
+//#include "ServerMainThread.h"
 
 // 클라이언트와 데이터 통신
 DWORD WINAPI SendRecvThread(LPVOID arg)
@@ -49,3 +51,4 @@ DWORD WINAPI SendRecvThread(LPVOID arg)
 
 	return 0;
 }
+*/

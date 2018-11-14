@@ -1,6 +1,9 @@
-#pragma once
+#ifndef OBJECT
+#define  OBJECT
+
 class object
 {
+private:
 	int kind;
 	float posX, posY;
 	float pre_posX, pre_posY;
@@ -57,8 +60,8 @@ public:
 	void SetIsVisible(bool isVisible);
 	bool GetIsVisible();
 
-	void ApplyForce(float ForceX, float ForceY, float elapsed_time_in_sec);
-	void BreakMovement(bool W_KeyIsDown, bool S_KeyIsDown, bool D_KeyIsDown, bool A_KeyIsDown, float elapsed_time_in_sec);
+	//void ApplyForce(float ForceX, float ForceY, float elapsed_time_in_sec);
+	//void BreakMovement(bool W_KeyIsDown, bool S_KeyIsDown, bool D_KeyIsDown, bool A_KeyIsDown, float elapsed_time_in_sec);
 
 	//공의 위치가 계속 우측 상단에 모이기 때문에 없에기 위해서 쓰는 함수
 	//임시 방편이니 다른 cpp를 이용해서 수정 요망
@@ -66,3 +69,5 @@ public:
 	void PingpongBall();
 
 };
+
+#endif // !OBJECT
