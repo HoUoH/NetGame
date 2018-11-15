@@ -11,7 +11,7 @@
 bool isExistPlayer[PlAYER_NUM] = { false };
 int playerIndex = 0;
 
-HANDLE hSREvent;
+HANDLE hSREvent[PlAYER_NUM];
 HANDLE hSRThread[PlAYER_NUM];
 
 HANDLE hScnMgrEvent;
