@@ -13,7 +13,6 @@ object::object()
 
 }
 
-
 object::~object()
 {
 	delete this;
@@ -78,7 +77,6 @@ void object::Update(float elapsed_time_in_sec)
 		velY = minVelocity;
 
 }
-
 
 void object::SetLocation(float x, float y)
 {
@@ -199,7 +197,6 @@ bool object::GetIsVisible()
 {
 	return isVisible;
 }
-
 
 void object::PingpongBall() {
 	velX = rand() % 6000 - 3000;

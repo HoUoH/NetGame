@@ -1,60 +1,8 @@
 #include "pch.h"
 #include "Collision.h"
 #include "Server_Global.h"
-//#include "object.h"
 
 float e = 1.f;	// 탄성 계수
-
-/*
-bool CollisionCheck(object * oA, object * oB)
-{
-
-	float oA_rad, oB_rad;
-	float sizeX, sizeY;
-	float x1, y1;
-	float x2, y2;
-	oA->GetSize(&oA_rad, &sizeX);
-	oB->GetSize(&oB_rad, &sizeY);
-	oA->GetLocation(&x1, &y1);
-	oB->GetLocation(&x2, &y2);
-
-
-	float colLenLimit = oA_rad / 2 + oB_rad / 2;
-	float distBtwPoints = sqrt((x2 - x1)*(x2 - x1) + (y2 - y1)*(y2 - y1));
-
-
-	if (colLenLimit <= distBtwPoints)
-		return false;
-
-	return true;
-}
-*/
-
-/*
-bool CollisionCheck(object *oA, float posx, float posy)
-{
-
-	float oA_rad;
-	float Secondsize;
-	float x1, y1;
-	float x2, y2;
-	oA->GetSize(&oA_rad, &Secondsize);
-	oA->GetLocation(&x1, &y1);
-
-
-	float colLenLimit = oA_rad / 2 + PLAYER_SIZE / 2;
-	float distBtwPoints = sqrt((posx - x1)*(posx - x1) + (posy - y1)*(posy - y1));
-
-
-	if (colLenLimit <= distBtwPoints) {
-		//printf("안겹쳐\n");
-		return false;
-	}
-
-	//printf("겹쳐\n");
-	return true;
-}
-*/
 
 //object vs postion ver
 bool CollisionCheck(const float& oA_rad, const float& oA_x, const float& oA_y, float posx, float posy)
@@ -88,8 +36,8 @@ bool CollisionCheck(const float& oA_rad, const float& oA_x, const float& oA_y,
 	return true;
 }
 
+//이 부분은 ScnMgr로 넘어감
 /*
-이 부분은 ScnMgr로 넘어감
 void CollisionReaction(class object* oA, class object* oB)
 {
 	int oA_Kind, oB_Kind = 0;
@@ -196,20 +144,6 @@ char WallCollision(const float& posX, const float& posY, const float& rad, const
 	//return none
 	return 'n';
 }
-
-/*
-bool JoinCollision(class object* obj, float posx, float posy) {
-	for (int i = 0; i < MAX_OBJECTS; ++i) {
-		if (obj[i].GetIsVisible() == true) {
-			if (CollisionCheck(&obj[i], posx, posy))
-				return true;
-		}
-	}
-
-	//printf("안겹쳐\n");
-	return false;
-}
-*/
 
 bool JoinCollision(const float& obj_Rad ,const float& obj_PosX, const float& obj_PosY, const float& posx, const float& posy) {
 	if (CollisionCheck(obj_Rad, obj_PosX, obj_PosY, posx, posy))

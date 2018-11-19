@@ -1,9 +1,6 @@
 #include "pch.h"
 #include "ScnMgrThread.h"
 #include "Collision.h"
-//#include "object.h"
-//#include "Server_Global.h"
-//#include "Server_Handle.h"
 
 //공이 한쪽으로 모이는걸 방지하기 위해 쓴 인자
 int FrameCount = 0;
@@ -226,21 +223,3 @@ int ScnMgr::FindEmptyObjectSlot()
    std::cout << "object list is full.\n";
    return -1;
 }
-
-
-/*
-DWORD WINAPI ScnMgrThread(LPVOID arg)
-{
-   ScnMgr *Scn = new ScnMgr();
-   Scn->InitObject();
-   while (1) {
-      WaitForMultipleObjects(8,(const HANDLE*)hSREvent, true, INFINITE);
-      Scn->Update(1);
-      Scn->ObjectCollision();
-      SetEvent(hScnMgrEvent);
-   }
-   delete Scn;
-
-   return 0;
-}
-*/
