@@ -3,22 +3,28 @@
 #ifndef WP
 #define WP
 
-//사용할 변수 선언
-#pragma pack(1)
-struct sendData {
-	int kind;
-	float posX, posY;
-	bool isVisible;
-}typedef sendData;
-#pragma pack()
+struct sockAttr {
+	SOCKET client_sock;
+	int threadNum;
+}typedef sockAttr;
 
-#pragma pack(1)
-struct recvData {
-	float posX, posY;
-	float velX, velY;
-	u_char specialKey;
-}typedef recvData;
-#pragma pack()
+//사용할 변수 선언
+
+//#pragma pack(1)
+//struct sendData {
+//	int kind;
+//	float posX, posY;
+//	bool isVisible;
+//}typedef sendData;
+//#pragma pack()
+
+//#pragma pack(1)
+//struct recvData {
+//	float posX, posY;
+//	float velX, velY;
+//	u_char specialKey;
+//}typedef recvData;
+//#pragma pack()
 
 #pragma pack(1)
 struct objects {
@@ -40,7 +46,6 @@ struct objects {
 
 // ServerMainThread
 bool isExistPlayer[PlAYER_NUM] = { false };
-int playerIndex = 0;
 
 HANDLE hSREvent[PlAYER_NUM];
 HANDLE hSRThread[PlAYER_NUM];
@@ -76,5 +81,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 DWORD WINAPI SendRecvThread(LPVOID arg);
 
 DWORD WINAPI ScnMgrThread(LPVOID arg);
+
+int recvn(SOCKET s, char *buf, int len, int flags);
 
 #endif

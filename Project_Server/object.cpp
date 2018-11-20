@@ -5,6 +5,8 @@
 float maxVelocity = 500.f;
 float minVelocity = -500.f;
 
+
+
 object::object()
 {
 	posX = 0;   posY = 0;
@@ -23,8 +25,6 @@ void object::Update(float elapsed_time_in_sec)
 
 	float gz = mass * 9.8;
 	float friction = coefFriction * gz;
-
-
 
 	//벡터의 크기 (크기, 방향 둘다 가지고 있음)
 	VelMag = sqrtf(velX * velX + velY * velY);
@@ -76,7 +76,10 @@ void object::Update(float elapsed_time_in_sec)
 	if (velY - minVelocity < FLT_EPSILON)
 		velY = minVelocity;
 
+	
+
 }
+
 
 void object::SetLocation(float x, float y)
 {

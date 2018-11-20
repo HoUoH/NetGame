@@ -9,6 +9,8 @@ public:
 	void InitObject();
 	void RenderScene();
 	void Update(float elapsed_time_in_sec);
+	sendData ReturnSendData(int playerIndex);
+	void SetRecvedData(recvData recvedData_InScnMgr[], int playerIndex);
 	void ObjectCollision();
 	int FindEmptyObjectSlot();
 	void CollisionReaction(object* oA, object* oB);

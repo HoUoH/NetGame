@@ -16,3 +16,19 @@
 
 #define PLAYER_SIZE 25
 #define BALL_SIZE 15
+
+#pragma pack(1)
+struct sendData {
+	int kind;
+	float posX, posY;
+	bool isVisible;
+}typedef sendData;
+#pragma pack()
+
+#pragma pack(1)
+struct recvData {
+	float posX, posY;
+	float velX, velY;
+	u_char specialKey;
+}typedef recvData;
+#pragma pack()

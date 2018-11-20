@@ -1,9 +1,11 @@
 #include "pch.h"
+#include "Server_Global.h"
 #include "ScnMgrThread.h"
 #include "Collision.h"
 
 //공이 한쪽으로 모이는걸 방지하기 위해 쓴 인자
 int FrameCount = 0;
+sendData toSendData_InScnMgr[PlAYER_NUM];
 
 ScnMgr::ScnMgr()
 {
@@ -86,14 +88,34 @@ float temp = 10.f;
 void ScnMgr::Update(float elapsed_time_in_sec)
 {
    //이 부분에 서버에서 받은 데이터 objs[]에 최신화해야됨(받자마자 최신화하는 것도 방법)
-
+	
    //PlAYER_NUM+1  : 오브젝트 움직임 최신화
    for (int i = PlAYER_NUM+1; i < MAX_OBJECTS; ++i) {
       if (objs[i]->GetIsVisible()) {
          objs[i]->Update(elapsed_time_in_sec);
+
+		 // ServerWinAPI.cpp의 ScnMgrThread에 업데이트된 sendData를 전달해주기 위해서
+		 toSendData_InScnMgr[i].isVisible = objs[i]->GetIsVisible();
+		 objs[i]->SetKind(toSendData_InScnMgr[i].kind);
+		 objs[i]->SetLocation(toSendData_InScnMgr[i].posX, toSendData_InScnMgr[i].posY);
       }
    }
-   //printf("사이즈 %d\n", sizeof(objs));
+      //printf("사이즈 %d\n", sizeof(objs));
+}
+
+// ServerWinAPI.cpp의 ScnMgrThread에 업데이트된 sendData를 전달해주기 위한 함수
+sendData ScnMgr::ReturnSendData(int playerIndex)
+{
+	return toSendData_InScnMgr[playerIndex];
+}
+
+void ScnMgr::SetRecvedData(recvData recvedData_InScnMgr[], int playerIndex)
+{
+	objs[playerIndex]->GetLocation(&recvedData_InScnMgr[playerIndex].posX, &recvedData_InScnMgr[playerIndex].posY);
+	objs[playerIndex]->GetVelocity(&recvedData_InScnMgr[playerIndex].velX, &recvedData_InScnMgr[playerIndex].velY);
+	// recvData의 specialKey값 읽어서 objs isVisible 초기화 해줘야하는 부분
+	// 홀이가 하기~
+	//objs[playerIndex]->SetIsVisible()
 }
 
 void ScnMgr::ObjectCollision()
