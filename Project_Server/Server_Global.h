@@ -29,6 +29,6 @@ struct sendData {
 struct recvData {
 	float posX, posY;
 	float velX, velY;
-	u_char specialKey;
+	int specialKey;
 }typedef recvData;
 #pragma pack()

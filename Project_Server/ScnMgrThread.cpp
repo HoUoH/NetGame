@@ -35,11 +35,11 @@ void ScnMgr::InitObject()
       objs[i]->SetAcc(0, 0);
       objs[i]->SetForce(0, 0);
       objs[i]->SetCoefFriction(1.f);
-      objs[i]->SetMass(4.f);
+      objs[i]->SetMass(1.f);
       objs[i]->SetVelocity(10, 10);
       objs[i]->SetSize(PLAYER_SIZE, PLAYER_SIZE);
       objs[i]->SetKind(KIND_HERO);
-      objs[i]->SetIsVisible(false);
+      objs[i]->SetIsVisible(FALSE);
    }
 
    for (int i = PlAYER_NUM; i < MAX_OBJECTS; ++i) {
@@ -49,10 +49,10 @@ void ScnMgr::InitObject()
       objs[i]->SetForce(0, 0);
       objs[i]->SetCoefFriction(0.5f);
       objs[i]->SetMass(1.f);
-      objs[i]->SetVelocity(rand() % 6000 - 3000, rand() % 6000 - 3000);
+      objs[i]->SetVelocity(1, 1);
       objs[i]->SetSize(BALL_SIZE, BALL_SIZE);
       objs[i]->SetKind(KIND_BALL);
-      objs[i]->SetIsVisible(true);
+      objs[i]->SetIsVisible(TRUE);
    }
 
    for (int i = 0; i < MAX_OBJECTS; ++i) {
@@ -94,10 +94,6 @@ void ScnMgr::Update(float elapsed_time_in_sec)
       if (objs[i]->GetIsVisible()) {
          objs[i]->Update(elapsed_time_in_sec);
 
-		 // ServerWinAPI.cpp의 ScnMgrThread에 업데이트된 sendData를 전달해주기 위해서
-		 toSendData_InScnMgr[i].isVisible = objs[i]->GetIsVisible();
-		 objs[i]->SetKind(toSendData_InScnMgr[i].kind);
-		 objs[i]->SetLocation(toSendData_InScnMgr[i].posX, toSendData_InScnMgr[i].posY);
       }
    }
       //printf("사이즈 %d\n", sizeof(objs));
@@ -203,8 +199,8 @@ void ScnMgr::FinalSendDataUpdate()
 	for (int i = 0; i < MAX_OBJECTS; i++) {
 		// ServerWinAPI.cpp의 ScnMgrThread에 업데이트된 sendData를 전달해주기 위해서
 		toSendData_InScnMgr[i].isVisible = objs[i]->GetIsVisible();
-		objs[i]->SetKind(toSendData_InScnMgr[i].kind);
-		objs[i]->SetLocation(toSendData_InScnMgr[i].posX, toSendData_InScnMgr[i].posY);
+		objs[i]->GetKind(&(toSendData_InScnMgr[i].kind));
+		objs[i]->GetLocation(&(toSendData_InScnMgr[i].posX), &(toSendData_InScnMgr[i].posY));
 	}
 }
 

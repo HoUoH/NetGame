@@ -47,7 +47,7 @@ ScnMgr::ScnMgr()
 		objs[i]->SetAcc(0, 0);
 		objs[i]->SetForce(0, 0);
 		objs[i]->SetCoefFriction(1.f);
-		objs[i]->SetMass(4.f);
+		objs[i]->SetMass(1.f);
 		objs[i]->SetVelocity(10, 10);
 		objs[i]->SetSize(PLAYER_SIZE, PLAYER_SIZE);
 		objs[i]->SetKind(KIND_HERO);
@@ -140,19 +140,21 @@ float temp = 10.f;
 
 void ScnMgr::Update(float elapsed_time_in_sec)
 {
+	/*
 	ObjectCollision();
 	for (int i = 0; i < MAX_OBJECTS; ++i) {
 		if (objs[i]->GetIsVisible()) {
 			objs[i]->Update(elapsed_time_in_sec);
 		}
 	}
+	*/
 	//printf("사이즈 %d\n", sizeof(objs));
 }
 
 
 void ScnMgr::ApplyForce(float ForceX, float ForceY, float elapsed_time_in_sec)
 {
-	objs[HERO_ID]->ApplyForce(ForceX, ForceY, elapsed_time_in_sec);
+	objs[MyID]->ApplyForce(ForceX, ForceY, elapsed_time_in_sec);
 
 }
 
@@ -160,7 +162,7 @@ void ScnMgr::ApplyForce(float ForceX, float ForceY, float elapsed_time_in_sec)
 
 void ScnMgr::BreakMovement(bool W_KeyIsDown, bool S_KeyIsDown, bool D_KeyIsDown, bool A_KeyIsDown, float elapsed_time_in_sec)
 {
-	objs[HERO_ID]->BreakMovement(W_KeyIsDown, S_KeyIsDown, D_KeyIsDown, A_KeyIsDown, elapsed_time_in_sec);
+	objs[MyID]->BreakMovement(W_KeyIsDown, S_KeyIsDown, D_KeyIsDown, A_KeyIsDown, elapsed_time_in_sec);
 }
 
 void ScnMgr::AddObject(float px, float py, float pz, float sx, float sy, float vx, float vy, int Kind)
@@ -219,7 +221,7 @@ int ScnMgr::FindEmptyObjectSlot()
 
 void ScnMgr::joinClick(int key) {
 	
-	bool alive = objs[HERO_ID]->GetIsVisible();	
+	bool alive = objs[MyID]->GetIsVisible();
 	if (alive == true)
 		return;
 
@@ -249,11 +251,28 @@ void ScnMgr::joinClick(int key) {
 void ScnMgr::RenderJoin() {
 
 	//이거 플레이어 넘버로 바꿔야 함
-	BOOL Alive = objs[HERO_ID]->GetIsVisible();
+	BOOL Alive = objs[MyID]->GetIsVisible();
 	
 	if (death_check(Alive)) {
 		m_Renderer->DrawTextureRect(0, 0, 0, 500, 200, 1, 1, 1, 1, Join_Texture);
 	}
+}
+
+void ScnMgr::SetMyID(int i)
+{
+	MyID = i;
+}
+
+void ScnMgr::UpdateRecvData(bool isvisible, float posx, float posy, int i)
+{
+	objs[i]->SetIsVisible(isvisible);
+	objs[i]->SetLocation(posx, posy);
+}
+
+void ScnMgr::getSendData(float * posX, float * posY, float * velX, float * velY)
+{
+	objs[MyID]->GetLocation(posX, posY);
+	objs[MyID]->GetVelocity(velX, velY);
 }
 
 

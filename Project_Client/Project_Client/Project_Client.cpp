@@ -2,7 +2,6 @@
 #define _WINSOCK_DEPRECATED_NO_WARNINGS
 #pragma comment(lib, "ws2_32")
 #include <winsock2.h>
-#include "stdafx.h"
 #include <iostream>
 #include <windows.h>
 #include <stdlib.h>
@@ -11,6 +10,7 @@
 #include "Dependencies\freeglut.h"
 #include "ScnMgr.h"
 #include "resource.h"
+#include "stdafx.h"
 
 #define SERVERIP   "127.0.0.1"
 #define SERVERPORT 9000
@@ -32,6 +32,7 @@ SOCKET sock; // 소켓
 char addrBuf[BUFSIZE + 1]; // 서버 IP 주소
 char fileBuf[BUFSIZE + 1]; // 서버에서 받을 파일 이름
 HANDLE hReadEvent, hWriteEvent; // 이벤트
+HANDLE drawEvent;
 HWND hSendButton; // 보내기 버튼
 HWND hEdit1, hEdit2; // 편집 컨트롤
 
@@ -76,6 +77,23 @@ void SpecialKeyInput(int key, int x, int y);
 
 DWORD WINAPI DrawMain(LPVOID arg);
 
+
+#pragma pack(1)
+struct recvData {
+	int kind;
+	float posX, posY;
+	bool isVisible;
+}typedef recvData;
+#pragma pack()
+
+#pragma pack(1)
+struct sendData {
+	float posX, posY;
+	float velX, velY;
+	int specialKey;
+}typedef sendData;
+#pragma pack()
+int sendkey;
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	LPSTR lpCmdLine, int nCmdShow)
 {
@@ -191,11 +209,12 @@ int recvn(SOCKET s, char *buf, int len, int flags)
 DWORD WINAPI ClientMain(LPVOID arg)
 {
 	//계속 입력을 받아야 하기 때문에 while안에 넣는다
-	while (1) {
-		//클릭 기다리기
-		WaitForSingleObject(hWriteEvent, INFINITE);
 
 		int retval;
+		//클릭 기다리기
+	while (1) {
+		WaitForSingleObject(hWriteEvent, INFINITE);
+
 		int len = 0;
 		char buf[BUFSIZE] = { NULL };
 
@@ -215,26 +234,63 @@ DWORD WINAPI ClientMain(LPVOID arg)
 		serveraddr.sin_addr.s_addr = inet_addr(addrBuf);
 		serveraddr.sin_port = htons(SERVERPORT);
 		retval = connect(sock, (SOCKADDR *)&serveraddr, sizeof(serveraddr));
-		if (retval == SOCKET_ERROR) err_quit((char*)"connect()");
-		CreateThread(NULL, 0, DrawMain, NULL, 0, NULL);
-
-		// 서버와 데이터 통신
-		// 홀아 데이터를 넣어라!
-		while (1) {
+		if (retval == SOCKET_ERROR)
+		{
+			err_display((char*)"connect()");
+			EnableWindow(hSendButton, TRUE); // 보내기 버튼 활성화
+			SetEvent(hReadEvent); // 읽기 완료 알리기
 		}
-
-		EnableWindow(hSendButton, TRUE); // 보내기 버튼 활성화
-		SetEvent(hReadEvent); // 읽기 완료 알리기
-
-
-		// closesocket()
-		closesocket(sock);
-
-		// 윈속 종료
-		WSACleanup();
-		DisplayText((char*)"데이터 받기 끝!\r\n");
+		else {
+			CreateThread(NULL, 0, DrawMain, NULL, 0, NULL);
+			drawEvent = CreateEvent(NULL, FALSE, FALSE, NULL);	//Scnmgr 초기화 기다림
+			if (drawEvent == NULL) return 1;
+			break;
+		}
 	}
+		WaitForSingleObject(drawEvent, INFINITE);
+		// 서버와 데이터 통신
+		//자기 번호 받기
+		int id;
+		retval = recvn(sock, (char*)&id, sizeof(int), 0);
+		g_ScnMgr->SetMyID(id);
+		recvData recvedData[MAX_OBJECTS];
+		sendData tosendData;
+		while (1) {
 
+			for (int i = 0; i < MAX_OBJECTS; i++) {
+				//전체 데이터 받기
+				retval = recvn(sock, (char*)&recvedData[i], sizeof(recvData), 0);
+				if (retval == SOCKET_ERROR) {
+					err_display((char*)"recv()");
+					break;
+				}
+				if(i!=id)
+				g_ScnMgr->UpdateRecvData(recvedData[i].isVisible, recvedData[i].posX, recvedData[i].posY,i);
+			}
+
+			g_ScnMgr->getSendData(&(tosendData.posX), &(tosendData.posY), &(tosendData.velX), &(tosendData.velY));
+			tosendData.specialKey = sendkey;
+			sendkey = 0;
+
+				//자기 위치 보내기
+				retval = send(sock, (char*)&tosendData, sizeof(sendData), 0);
+				if (retval == SOCKET_ERROR) {
+					err_display((char*)"send()");
+					break;
+				}
+			
+		}
+		//	EnableWindow(hSendButton, TRUE); // 보내기 버튼 활성화
+			SetEvent(hReadEvent); // 읽기 완료 알리기
+
+
+			// closesocket()
+			closesocket(sock);
+
+			// 윈속 종료
+			WSACleanup();
+			DisplayText((char*)"데이터 받기 끝!\r\n");
+	
 	return 0;
 }
 
@@ -247,8 +303,7 @@ void RenderScene(void)	//1초에 최소 60번 이상 출력되어야 하는 함수
 	DWORD elapsed_time = current_time - prev_render_time;
 	prev_render_time = current_time;
 	float eTime = elapsed_time / 1000.f;//convert to second
-//	std::cout << "elapsedTime:" << eTime << std::endl;
-	//std::cout << "w:" << W_KeyIsDown << " a:" << A_KeyIsDown << " s:" << S_KeyIsDown << " d:" << D_KeyIsDown << std::endl;
+
 
 	float forceX = 0.f, forceY = 0.f;
 	float amount = 3000.0f;		// 1N = 1000 기준
@@ -328,7 +383,9 @@ void KeyUpInput(unsigned char key, int x, int y) {
 void SpecialKeyInput(int key, int x, int y)
 {
 	//시작 키를 눌렀을 경우 (F1키)
-	g_ScnMgr->joinClick(key);
+	if (key == 1) {
+		sendkey = 1;
+	}
 	RenderScene();
 }
 
@@ -354,7 +411,7 @@ DWORD WINAPI DrawMain(LPVOID arg) {
 	glutMouseFunc(MouseInput);
 
 	g_ScnMgr = new ScnMgr();
-	
+	SetEvent(drawEvent);
 	while (1)
 	{
 		glutMainLoop();

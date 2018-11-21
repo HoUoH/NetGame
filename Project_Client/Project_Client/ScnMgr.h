@@ -21,6 +21,9 @@ public:
 	//게임 새로 시작 및 시작
 	void joinClick(int key);
 	void RenderJoin();
+	void SetMyID(int i);
+	void UpdateRecvData(bool isvisible, float posx, float posy, int i);
+	void getSendData(float *posX, float *posY, float *velX, float *velY);
 private:
 	Renderer *m_Renderer;
 	object *objs[MAX_OBJECTS];
@@ -28,5 +31,6 @@ private:
 	GLuint Ball_Texture;
 	GLuint Join_Texture;
 	GLuint Background_Texture;
+	int MyID;
 };
 
