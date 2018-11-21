@@ -1,52 +1,87 @@
 ///////////////////
-// 11.20 ����  //
+// 11.21 홀  //
+///////////////////
+------------------------------------------------------
+Server, Client 공동
+Client의 recvData구조체가 Server의 sendData구조체
+         sendData구조체가 Server의 recvData구조체
+   
+send recv 할때 specialkey  u_char형 -> int형
+------------------------------------------------------
+Server
+Server 데이터
+고정 threadnum int크기로 하나 보냄 // 자기 번호 알려줌
+고정 toSendData구조체 MAX_OBJECTS 만큼 보냄
+고정 recvedData구조체 하나 받음 // 클라이언트의 이동연산된것
+------------------------------------------------------
+Client
+ drawEvent 추가  --DrawMain스레드가 다 불리기전에 objs의 데이터에 접근하게 된다.
+ g_ScnMgr이 할당되지 않아서 오류 발생하는 문제있어서 
+ 할당될때까지 drawEvent로 Clientmain 멈춰둠
+ Client 데이터
+고정 id int크기로 하나 받음 // 자기 번호 받음 setmyid함수로 전달
+고정 recvdata MAX_OBJECTS 만큼 받음 //모든 오브젝트 위치 클라이언트마다 연동
+고정 send구조체 하나 보냄 // 클라이언트의 이동연산된것
+------------------------------------------------------
+기타사항,,,
+클라이언트 여러개 키려면 x64폴더->Debug->exe파일들어가야함 
+dll, Texture폴더, 그리고 shadow.png(교수님 api특인듯...) 넣어둬야한다... shadow.png는 exe옆에다.
+
+버그
+클라이언트에서 키입력이안됨
+   - 클라이언트가 recv하고 send하기 전에 RenderScene()이 불려야 하나???
+   - RenderScene() 부르려고 하면 프로그램이 죽어버림
+   - 해결방법을 찾자
+클라이언트 4개정도 켜고 보니 프레임이 많이 떨어짐, 그래도 일단 키입력 문제부터 해결해야 할듯
+///////////////////
+// 11.20 익진  //
 ///////////////////
 
 #########
-# ������� #
+# 변경사항 #
 #########
 (0) ServerWinAPI.h
-- sockAttr����ü �߰���
+- sockAttr구조체 추가됨
 
 (1) ServerMainThread()
-- SendRecvThread()�� sockAttr����ü ������ sockInfo ����
+- SendRecvThread()에 sockAttr구조체 형식의 sockInfo 전달
 
 (2) SendRecvThread()
-- send(), recvn()�κ� �������̷� ������ �ް� ��
-- WaitForSingleObject(hScnMgrEvent, 10)���� ������, �� �κ� �ּ� ������
+- send(), recvn()부분 고정길이로 보내고 받게 함
+- WaitForSingleObject(hScnMgrEvent, 10)으로 설정함, 이 부분 주석 참고좀
 
 (3) ServerWinAPI.cpp
-- ScnMgrThread() Ȯ���غ��� [[[Ȧ��]]]
+- ScnMgrThread() 확인해보기 [[[홀이]]]
 
 (4) ScnMgrThread.h
-- ReturnSendData() �߰�
-- SetRecvedData() �߰�
+- ReturnSendData() 추가
+- SetRecvedData() 추가
 
 (5)Server_Global.h
-- sendData, recvData ����ü �ű�
+- sendData, recvData 구조체 옮김
 
 #####################
-# �����̶� Ȧ�� �о ����
+# 은상이랑 홀이 읽어볼 사항
 #####################
-#1_ ����� Ű
+#1_ 스페셜 키
 
-Ŭ���̾�Ʈ���� ������ send()���� �� specialKey�� �־������.
-�������� �̰��� recv()�ؼ� recvData�� specialKey�� �ʱ�ȭ �Ǹ�
+클라이언트에서 서버에 send()해줄 때 specialKey를 넣어줘야함.
+서버에서 이것을 recv()해서 recvData에 specialKey가 초기화 되면
 
-Ȧ�̴�
-�׷� �� recvData���� specialKey �о�ͼ�
+홀이는
+그럼 각 recvData에서 specialKey 읽어와서
 if (objs[i]->isVisible == false && recvData[i].specialKey == F1)
-�϶� objs[i]->SetisVisible(true);�� �ؾ���
+일때 objs[i]->SetisVisible(true);를 해야함
 
 
-#2_ Ȧ�� ScnMgrThread�� WaitForMultipleObjects
-�̰� ���� �ڵ忡 �ּ�ó���Ѱ� �о��
+#2_ 홀이 ScnMgrThread의 WaitForMultipleObjects
+이건 내가 코드에 주석처리한거 읽어보기
 
 #############
-# ������ �� ���� #
+# 고민해 볼 사항 #
 #############
-�÷��̾ Ŭ���̾�Ʈ�� �������� ������, 
-���������� �� Ŭ���̾�Ʈ ������ closesocket()�� ���ִ� ������ ��� ĳġ�س���?
+플레이어가 클라이언트를 꺼버리고 나가면, 
+서버에서는 그 클라이언트 소켓을 closesocket()을 해주는 시점을 어떻게 캐치해낼까?
 
 -------------------------------------------------------------------------------------------
 
