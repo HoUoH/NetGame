@@ -146,8 +146,6 @@ char WallCollision(const float& posX, const float& posY, const float& rad, const
 }
 
 bool JoinCollision(const float& obj_Rad ,const float& obj_PosX, const float& obj_PosY, const float& posx, const float& posy) {
-	if (CollisionCheck(obj_Rad, obj_PosX, obj_PosY, posx, posy))
-		return true;
-	//printf("¾È°ãÃÄ\n");
-	return false;
+	
+	return CollisionCheck(obj_Rad, obj_PosX, obj_PosY, posx, posy);
 }

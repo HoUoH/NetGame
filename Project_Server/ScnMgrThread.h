@@ -12,6 +12,7 @@ public:
 	sendData ReturnSendData(int playerIndex);
 	void SetRecvedData(recvData recvedData_InScnMgr[], int playerIndex);
 	void ObjectCollision();
+	void FinalSendDataUpdate();
 	int FindEmptyObjectSlot();
 	void CollisionReaction(object* oA, object* oB);
 private:

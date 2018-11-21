@@ -9,5 +9,4 @@ bool CollisionCheck(const float& oA_rad, const float& oA_x, const float& oA_y,
 char WallCollision(const float& posX, const float& posY, const float& rad, const float& height);
 
 bool JoinCollision(const float& obj_Rad, const float& obj_PosX, const float& obj_PosY, const float& posx, const float& posy);
-
 #endif // !COLLISION
