@@ -357,6 +357,7 @@ void KeyDownInput(unsigned char key, int x, int y)
 	default:
 		break;
 	}
+	RenderScene();
 }
 
 void KeyUpInput(unsigned char key, int x, int y) {
@@ -385,6 +386,7 @@ void SpecialKeyInput(int key, int x, int y)
 	//시작 키를 눌렀을 경우 (F1키)
 	if (key == 1) {
 		sendkey = 1;
+		g_ScnMgr->joinClick(sendkey);
 	}
 	RenderScene();
 }
@@ -412,10 +414,7 @@ DWORD WINAPI DrawMain(LPVOID arg) {
 
 	g_ScnMgr = new ScnMgr();
 	SetEvent(drawEvent);
-	while (1)
-	{
-		glutMainLoop();
-	}
+	glutMainLoop();
 	delete g_ScnMgr;
 
 	return 0;

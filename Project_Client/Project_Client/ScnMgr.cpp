@@ -8,6 +8,7 @@ int FrameCount = 0;
 
 ScnMgr::ScnMgr()
 {
+	MyID = -1;
 
 	for (int i = 0; i < MAX_OBJECTS; ++i) {
 		objs[i] = NULL;
@@ -56,6 +57,7 @@ ScnMgr::ScnMgr()
 
 	objs[HERO_ID]->SetIsVisible(false);
 
+	// 볼 추가 = 서버에서 해줘야함
 	for (int i = PlAYER_NUM; i < MAX_OBJECTS; ++i) {
 		objs[i] = new object();
 		// 랜덤값으로 움직이게 만듦
@@ -63,10 +65,12 @@ ScnMgr::ScnMgr()
 		objs[i]->SetForce(0, 0);
 		objs[i]->SetCoefFriction(0.5f);
 		objs[i]->SetMass(1.f);
-		objs[i]->SetVelocity(rand() % 6000 - 3000, rand() % 6000 - 3000);
+		objs[i]->SetVelocity(0,0);
+		//일단 볼 많으면 캐릭터 움직이는거 체크 안되서 꺼둠
+		//objs[i]->SetVelocity(rand() % 6000 - 3000, rand() % 6000 - 3000);
 		objs[i]->SetSize(BALL_SIZE, BALL_SIZE);
 		objs[i]->SetKind(KIND_BALL);
-		objs[i]->SetIsVisible(true);
+		objs[i]->SetIsVisible(false);
 	}
 
 	// MAX_OBJECTS - 4는 벽을 제외하기 위해서
@@ -140,15 +144,18 @@ float temp = 10.f;
 
 void ScnMgr::Update(float elapsed_time_in_sec)
 {
-	/*
 	ObjectCollision();
 	for (int i = 0; i < MAX_OBJECTS; ++i) {
 		if (objs[i]->GetIsVisible()) {
 			objs[i]->Update(elapsed_time_in_sec);
 		}
 	}
-	*/
+
 	//printf("사이즈 %d\n", sizeof(objs));
+
+	//if (objs[MyID]->GetIsVisible() && MyID != -1) {
+	//	objs[MyID]->Update(elapsed_time_in_sec);
+	//}
 }
 
 
@@ -240,11 +247,11 @@ void ScnMgr::joinClick(int key) {
 			//std::cout << posX << " " << posY << std::endl;
 			//std::cout << check << std::endl;
 		}
-		objs[0]->SetIsVisible(true);
-		objs[0]->SetAcc(0, 0);
-		objs[0]->SetForce(0, 0);
-		objs[0]->SetVelocity(0, 0);
-		objs[0]->SetLocation(posX, posY);
+		objs[MyID]->SetIsVisible(true);
+		objs[MyID]->SetAcc(0, 0);
+		objs[MyID]->SetForce(0, 0);
+		objs[MyID]->SetVelocity(0, 0);
+		objs[MyID]->SetLocation(posX, posY);
 	}
 }
 

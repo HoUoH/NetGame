@@ -25,7 +25,6 @@ void object::Update(float elapsed_time_in_sec)
 
 	float gz = mass * 9.8;
 	float friction = coefFriction * gz;
-
 	
 
 	//벡터의 크기 (크기, 방향 둘다 가지고 있음)
