@@ -145,11 +145,11 @@ float temp = 10.f;
 void ScnMgr::Update(float elapsed_time_in_sec)
 {
 	ObjectCollision();
-	for (int i = 0; i < MAX_OBJECTS; ++i) {
-		if (objs[i]->GetIsVisible()) {
-			objs[i]->Update(elapsed_time_in_sec);
+	//for (int i = 0; i < MAX_OBJECTS; ++i) {
+		if (objs[MyID]->GetIsVisible()) {
+			objs[MyID]->Update(elapsed_time_in_sec);
 		}
-	}
+	//}
 
 	//printf("ªÁ¿Ã¡Ó %d\n", sizeof(objs));
 

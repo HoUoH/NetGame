@@ -52,7 +52,7 @@ void ScnMgr::InitObject()
       objs[i]->SetVelocity(1, 1);
       objs[i]->SetSize(BALL_SIZE, BALL_SIZE);
       objs[i]->SetKind(KIND_BALL);
-      objs[i]->SetIsVisible(TRUE);
+      objs[i]->SetIsVisible(FALSE);
    }
 
    for (int i = 0; i < MAX_OBJECTS; ++i) {
@@ -88,7 +88,7 @@ float temp = 10.f;
 void ScnMgr::Update(float elapsed_time_in_sec)
 {
    //이 부분에 서버에서 받은 데이터 objs[]에 최신화해야됨(받자마자 최신화하는 것도 방법)
-	
+	ObjectCollision();
    //PlAYER_NUM+1  : 오브젝트 움직임 최신화
    for (int i = PlAYER_NUM+1; i < MAX_OBJECTS; ++i) {
       if (objs[i]->GetIsVisible()) {
