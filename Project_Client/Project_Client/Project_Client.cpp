@@ -80,8 +80,8 @@ DWORD WINAPI DrawMain(LPVOID arg);
 
 #pragma pack(1)
 struct recvData {
-	int kind;
 	float posX, posY;
+	float velX, velY;
 	bool isVisible;
 }typedef recvData;
 #pragma pack()
@@ -90,10 +90,11 @@ struct recvData {
 struct sendData {
 	float posX, posY;
 	float velX, velY;
-	int specialKey;
+	bool isVisible;
 }typedef sendData;
 #pragma pack()
 int sendkey;
+
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	LPSTR lpCmdLine, int nCmdShow)
 {
@@ -209,9 +210,9 @@ int recvn(SOCKET s, char *buf, int len, int flags)
 DWORD WINAPI ClientMain(LPVOID arg)
 {
 	//계속 입력을 받아야 하기 때문에 while안에 넣는다
+	int retval;
 
-		int retval;
-		//클릭 기다리기
+	//클릭 기다리기
 	while (1) {
 		WaitForSingleObject(hWriteEvent, INFINITE);
 
@@ -247,49 +248,50 @@ DWORD WINAPI ClientMain(LPVOID arg)
 			break;
 		}
 	}
-		WaitForSingleObject(drawEvent, INFINITE);
-		// 서버와 데이터 통신
-		//자기 번호 받기
-		int id;
-		retval = recvn(sock, (char*)&id, sizeof(int), 0);
-		g_ScnMgr->SetMyID(id);
-		recvData recvedData[MAX_OBJECTS];
-		sendData tosendData;
-		while (1) {
 
-			for (int i = 0; i < MAX_OBJECTS; i++) {
-				//전체 데이터 받기
-				retval = recvn(sock, (char*)&recvedData[i], sizeof(recvData), 0);
-				if (retval == SOCKET_ERROR) {
-					err_display((char*)"recv()");
-					break;
-				}
-				if(i!=id)
-				g_ScnMgr->UpdateRecvData(recvedData[i].isVisible, recvedData[i].posX, recvedData[i].posY,i);
+	WaitForSingleObject(drawEvent, INFINITE);
+	// 서버와 데이터 통신
+
+	//자기 번호 받기
+	int id;
+	
+	retval = recvn(sock, (char*)&id, sizeof(int), 0);
+	g_ScnMgr->SetMyID(id);
+	recvData recvedData[MAX_OBJECTS];
+	sendData tosendData;
+	while (1) {
+
+		for (int i = 0; i < MAX_OBJECTS; i++) {
+			//전체 데이터 받기
+			retval = recvn(sock, (char*)&recvedData[i], sizeof(recvData), 0);
+			if (retval == SOCKET_ERROR) {
+				err_display((char*)"recv()");
+				break;
 			}
-
-			g_ScnMgr->getSendData(&(tosendData.posX), &(tosendData.posY), &(tosendData.velX), &(tosendData.velY));
-			tosendData.specialKey = sendkey;
-			sendkey = 0;
-
-				//자기 위치 보내기
-				retval = send(sock, (char*)&tosendData, sizeof(sendData), 0);
-				if (retval == SOCKET_ERROR) {
-					err_display((char*)"send()");
-					break;
-				}
-			
+			if(i!=id)
+				g_ScnMgr->UpdateRecvData(recvedData[i].isVisible, recvedData[i].posX, recvedData[i].posY,i);
 		}
-		//	EnableWindow(hSendButton, TRUE); // 보내기 버튼 활성화
-			SetEvent(hReadEvent); // 읽기 완료 알리기
+
+		g_ScnMgr->getSendData(&(tosendData.posX), &(tosendData.posY), &(tosendData.velX), &(tosendData.velY), &(tosendData.isVisible));	
+
+			//자기 위치 보내기
+			retval = send(sock, (char*)&tosendData, sizeof(sendData), 0);
+			if (retval == SOCKET_ERROR) {
+				err_display((char*)"send()");
+				break;
+			}
+		
+	}
+	//EnableWindow(hSendButton, TRUE); // 보내기 버튼 활성화
+	SetEvent(hReadEvent); // 읽기 완료 알리기
 
 
-			// closesocket()
-			closesocket(sock);
+	// closesocket()
+	closesocket(sock);
 
-			// 윈속 종료
-			WSACleanup();
-			DisplayText((char*)"데이터 받기 끝!\r\n");
+	// 윈속 종료
+	WSACleanup();
+	DisplayText((char*)"데이터 받기 끝!\r\n");
 	
 	return 0;
 }
@@ -385,6 +387,7 @@ void SpecialKeyInput(int key, int x, int y)
 	//시작 키를 눌렀을 경우 (F1키)
 	if (key == 1) {
 		sendkey = 1;
+		g_ScnMgr->joinClick(sendkey);
 	}
 	RenderScene();
 }
@@ -412,10 +415,8 @@ DWORD WINAPI DrawMain(LPVOID arg) {
 
 	g_ScnMgr = new ScnMgr();
 	SetEvent(drawEvent);
-	while (1)
-	{
-		glutMainLoop();
-	}
+	glutMainLoop();
+	
 	delete g_ScnMgr;
 
 	return 0;

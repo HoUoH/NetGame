@@ -234,11 +234,11 @@ void ScnMgr::joinClick(int key) {
 			//std::cout << posX << " " << posY << std::endl;
 			//std::cout << check << std::endl;
 		}
-		objs[0]->SetIsVisible(true);
-		objs[0]->SetAcc(0, 0);
-		objs[0]->SetForce(0, 0);
-		objs[0]->SetVelocity(0, 0);
-		objs[0]->SetLocation(posX, posY);
+		objs[MyID]->SetIsVisible(true);
+		objs[MyID]->SetAcc(0, 0);
+		objs[MyID]->SetForce(0, 0);
+		objs[MyID]->SetVelocity(0, 0);
+		objs[MyID]->SetLocation(posX, posY);
 	}
 }
 
@@ -263,10 +263,11 @@ void ScnMgr::UpdateRecvData(bool isvisible, float posx, float posy, int i)
 	objs[i]->SetLocation(posx, posy);
 }
 
-void ScnMgr::getSendData(float * posX, float * posY, float * velX, float * velY)
+void ScnMgr::getSendData(float * posX, float * posY, float * velX, float * velY, bool * isVisible)
 {
 	objs[MyID]->GetLocation(posX, posY);
 	objs[MyID]->GetVelocity(velX, velY);
+	*isVisible = objs[MyID]->GetIsVisible();
 }
 
 

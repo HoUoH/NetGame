@@ -113,7 +113,7 @@ void ScnMgr::SetRecvedData(recvData recvedData_InScnMgr[], int playerIndex)	//re
 	// recvData의 specialKey값 읽어서 objs isVisible 초기화 해줘야하는 부분
 	// 홀이가 하기~
 	if (!objs[playerIndex]->GetIsVisible()) {
-		if (recvedData_InScnMgr[playerIndex].specialKey == 1) {
+		if (recvedData_InScnMgr[playerIndex].isVisible == 1) {
 			objs[playerIndex]->SetIsVisible(TRUE);
 			bool check = true;
 			float posX = 0, posY = 0;
@@ -199,7 +199,8 @@ void ScnMgr::FinalSendDataUpdate()
 	for (int i = 0; i < MAX_OBJECTS; i++) {
 		// ServerWinAPI.cpp의 ScnMgrThread에 업데이트된 sendData를 전달해주기 위해서
 		toSendData_InScnMgr[i].isVisible = objs[i]->GetIsVisible();
-		objs[i]->GetKind(&(toSendData_InScnMgr[i].kind));
+		objs[i]->GetVelocity(&(toSendData_InScnMgr[i].velX), &(toSendData_InScnMgr[i].velX));
+		toSendData_InScnMgr[i].isVisible = objs[i]->GetIsVisible();
 		objs[i]->GetLocation(&(toSendData_InScnMgr[i].posX), &(toSendData_InScnMgr[i].posY));
 	}
 }

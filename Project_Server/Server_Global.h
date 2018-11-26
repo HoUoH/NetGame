@@ -18,17 +18,17 @@
 #define BALL_SIZE 15
 
 #pragma pack(1)
-struct sendData {
-	int kind;
-	float posX, posY;
-	bool isVisible;
-}typedef sendData;
-#pragma pack()
-
-#pragma pack(1)
 struct recvData {
 	float posX, posY;
 	float velX, velY;
-	int specialKey;
+	bool isVisible;
 }typedef recvData;
+#pragma pack()
+
+#pragma pack(1)
+struct sendData {
+	float posX, posY;
+	float velX, velY;
+	bool isVisible;
+}typedef sendData;
 #pragma pack()
