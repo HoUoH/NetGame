@@ -210,8 +210,8 @@ DWORD WINAPI ClientMain(LPVOID arg)
 {
 	//계속 입력을 받아야 하기 때문에 while안에 넣는다
 
-	int retval;
-	//클릭 기다리기
+		int retval;
+		//클릭 기다리기
 	while (1) {
 		WaitForSingleObject(hWriteEvent, INFINITE);
 
@@ -264,8 +264,7 @@ DWORD WINAPI ClientMain(LPVOID arg)
 					err_display((char*)"recv()");
 					break;
 				}
-				DisplayText((char*)"데이터 받았당");
-				//if(i!=id)
+				if(i!=id)
 				g_ScnMgr->UpdateRecvData(recvedData[i].isVisible, recvedData[i].posX, recvedData[i].posY,i);
 			}
 
@@ -282,14 +281,15 @@ DWORD WINAPI ClientMain(LPVOID arg)
 			
 		}
 		//	EnableWindow(hSendButton, TRUE); // 보내기 버튼 활성화
-		SetEvent(hReadEvent); // 읽기 완료 알리기
-		
-		// closesocket()
-		closesocket(sock);
-		
-		// 윈속 종료
-		WSACleanup();
-		DisplayText((char*)"데이터 받기 끝!\r\n");
+			SetEvent(hReadEvent); // 읽기 완료 알리기
+
+
+			// closesocket()
+			closesocket(sock);
+
+			// 윈속 종료
+			WSACleanup();
+			DisplayText((char*)"데이터 받기 끝!\r\n");
 	
 	return 0;
 }
@@ -357,7 +357,6 @@ void KeyDownInput(unsigned char key, int x, int y)
 	default:
 		break;
 	}
-	RenderScene();
 }
 
 void KeyUpInput(unsigned char key, int x, int y) {
@@ -386,7 +385,6 @@ void SpecialKeyInput(int key, int x, int y)
 	//시작 키를 눌렀을 경우 (F1키)
 	if (key == 1) {
 		sendkey = 1;
-		g_ScnMgr->joinClick(sendkey);
 	}
 	RenderScene();
 }
@@ -414,7 +412,10 @@ DWORD WINAPI DrawMain(LPVOID arg) {
 
 	g_ScnMgr = new ScnMgr();
 	SetEvent(drawEvent);
-	glutMainLoop();
+	while (1)
+	{
+		glutMainLoop();
+	}
 	delete g_ScnMgr;
 
 	return 0;
