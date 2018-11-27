@@ -51,10 +51,9 @@ ScnMgr::ScnMgr()
 		objs[i]->SetVelocity(10, 10);
 		objs[i]->SetSize(PLAYER_SIZE, PLAYER_SIZE);
 		objs[i]->SetKind(KIND_HERO);
-		objs[i]->SetIsVisible(true);
+		objs[i]->SetIsVisible(false);
 	}
 
-	objs[HERO_ID]->SetIsVisible(false);
 
 	for (int i = PlAYER_NUM; i < MAX_OBJECTS; ++i) {
 		objs[i] = new object();

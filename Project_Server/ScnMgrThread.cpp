@@ -105,39 +105,13 @@ sendData ScnMgr::ReturnSendData(int playerIndex)
 	return toSendData_InScnMgr[playerIndex];
 }
 
-void ScnMgr::SetRecvedData(recvData recvedData_InScnMgr[], int playerIndex)	//recv 한 데이터를 서버에 덮어씌움
+void ScnMgr::SetRecvedData(recvData* recvedData_InScnMgr, int playerIndex)	//recv 한 데이터를 서버에 덮어씌움
 {
 	objs[playerIndex]->SetLocation(recvedData_InScnMgr[playerIndex].posX, recvedData_InScnMgr[playerIndex].posY);
 	objs[playerIndex]->SetVelocity(recvedData_InScnMgr[playerIndex].velX, recvedData_InScnMgr[playerIndex].velY);
-
+	objs[playerIndex]->SetIsVisible(recvedData_InScnMgr[playerIndex].isVisible);
 	// recvData의 specialKey값 읽어서 objs isVisible 초기화 해줘야하는 부분
-	// 홀이가 하기~
-	if (!objs[playerIndex]->GetIsVisible()) {
-		if (recvedData_InScnMgr[playerIndex].isVisible == 1) {
-			objs[playerIndex]->SetIsVisible(TRUE);
-			bool check = true;
-			float posX = 0, posY = 0;
-			float obj_rad=0;
-			float obj_x, obj_y=0;
-			//다시 시작 위치를 잡아줘야 한다.
-			//다시 시작 위치를 잡아주는 컬리전 함수
-			while (check)
-			{
-				posX = rand() % (WINDOW_SIZEX - 100) - 250;
-				posY = rand() % (WINDOW_SIZEX - 100) - 250;
-				objs[playerIndex]->GetLocation(&obj_x, &obj_y);
-				objs[playerIndex]->GetSize(&obj_rad, &obj_rad);
-				check = JoinCollision(obj_rad, obj_x, obj_y, posX, posY);
-					//std::cout << posX << " " << posY << std::endl;
-					//std::cout << check << std::endl;
-			}
-			objs[playerIndex]->SetIsVisible(true);
-			objs[playerIndex]->SetAcc(0, 0);
-			objs[playerIndex]->SetForce(0, 0);
-			objs[playerIndex]->SetVelocity(0, 0);
-			objs[playerIndex]->SetLocation(posX, posY);
-		}
-	}
+
 	//objs[playerIndex]->SetIsVisible()
 }
 
