@@ -4,6 +4,7 @@
 
 float e = 1.f;	// Åº¼º °è¼ö
 
+
 //object vs postion ver
 bool CollisionCheck(const float& oA_rad, const float& oA_x, const float& oA_y, float posx, float posy)
 {
@@ -129,6 +130,7 @@ void WallCollision(class object* obj)
 
 }
 */
+
 
 char WallCollision(const float& posX, const float& posY, const float& rad, const float& height)
 {

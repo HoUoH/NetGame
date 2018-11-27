@@ -16,7 +16,7 @@ public:
 	void AddObject(float px, float py, float pz, float sx, float sy, float vx, float vy, int kind);
 	void DeleteObject(unsigned int id);
 	void ObjectCollision();
-	int FindEmptyObjectSlot();
+	/*int FindEmptyObjectSlot();*/
 	//게임 새로 시작 및 시작
 	void joinClick(int key);
 	void RenderJoin();

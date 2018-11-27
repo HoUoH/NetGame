@@ -4,7 +4,7 @@
 #define BUFSIZE    512
 
 #define PlAYER_NUM 4
-#define BALL_NUM 10
+#define BALL_NUM 0
 #define MAX_OBJECTS PlAYER_NUM + BALL_NUM
 #define HERO_ID 0
 

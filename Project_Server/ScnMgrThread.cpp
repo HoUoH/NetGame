@@ -58,22 +58,22 @@ void ScnMgr::InitObject()
    for (int i = 0; i < MAX_OBJECTS; ++i) {
       bool check = true;
       objs[i]->SetLocation(rand() % (WINDOW_SIZEX - 100) - 250, rand() % (WINDOW_SIZEY - 100) - 250);
-      for (int j = 0; j < MAX_OBJECTS; ++j) {
-         if (i != j) {
+      for (int j = i+1; j < MAX_OBJECTS; ++j) {
+         //if (i != j) {
 			 
 			 float obj1_posX, obj1_posY, obj1_rad;
 			 float obj2_posX, obj2_posY, obj2_rad;
 			 objs[i]->GetLocation(&obj1_posX, &obj1_posY);
 			 objs[i]->GetSize(&obj1_rad, &obj1_rad);
-			 objs[j]->GetLocation(&obj1_posX, &obj1_posY);
-			 objs[j]->GetSize(&obj1_rad, &obj1_rad);
+			 objs[j]->GetLocation(&obj2_posX, &obj2_posY);
+			 objs[j]->GetSize(&obj2_rad, &obj2_rad);
 
             if (CollisionCheck(obj1_rad, obj1_posX, obj1_posY,
 				obj2_rad, obj2_posX, obj2_posY)) {
                check = false;
                break;
             }
-         }
+         //}
       }
       if (check == false) {
          i--;
@@ -90,7 +90,7 @@ void ScnMgr::Update(float elapsed_time_in_sec)
    //이 부분에 서버에서 받은 데이터 objs[]에 최신화해야됨(받자마자 최신화하는 것도 방법)
 	
    //PlAYER_NUM+1  : 오브젝트 움직임 최신화
-   for (int i = PlAYER_NUM+1; i < MAX_OBJECTS; ++i) {
+   for (int i = PlAYER_NUM; i < MAX_OBJECTS; ++i) {
       if (objs[i]->GetIsVisible()) {
          objs[i]->Update(elapsed_time_in_sec);
 
@@ -145,23 +145,30 @@ void ScnMgr::ObjectCollision()
 		 default:
 			 break;
 		 }
-         for (int j = 0; j < MAX_OBJECTS; ++j) {
-            if (i != j)
-               if (objs[j]->GetIsVisible()) {
-				   objs[i]->GetLocation(&obj1_posX, &obj1_posY);
-				   objs[i]->GetSize(&obj1_rad, &obj1_rad);
-				   objs[j]->GetLocation(&obj1_posX, &obj1_posY);
-				   objs[j]->GetSize(&obj1_rad, &obj1_rad);
-                  if (CollisionCheck(obj1_rad, obj1_posX, obj1_posY, 
-					  obj2_rad, obj2_posX, obj2_posY)) {
-                     objs[i]->GetPreLocation(&obj1_posX, &obj1_posY);
-                     objs[i]->SetLocation(obj1_posX, obj1_posY);
-                     objs[j]->GetPreLocation(&obj2_posX, &obj2_posY);
-                     objs[j]->SetLocation(obj2_posX, obj2_posY);
-                     // 충돌에 의한 반응
-                     CollisionReaction(objs[i], objs[j]);
-                  }
-               }
+         for (int j = i+1; j < MAX_OBJECTS; ++j) {
+           // if (i != j)
+			 // 11.28 익진
+			// 이부분 넣으면 캐릭터끼리 끼어서 못움직이는데
+			// 캐릭터 끼리는 충돌체크 하지 않는 방법도 생각해보자
+
+			// 위의 내용을 아래에 반영한 것
+			 if (i == PlAYER_NUM) {
+				 if (objs[j]->GetIsVisible()) {
+					 objs[i]->GetLocation(&obj1_posX, &obj1_posY);
+					 objs[i]->GetSize(&obj1_rad, &obj1_rad);
+					 objs[j]->GetLocation(&obj2_posX, &obj2_posY);
+					 objs[j]->GetSize(&obj2_rad, &obj2_rad);
+					 if (CollisionCheck(obj1_rad, obj1_posX, obj1_posY,
+						 obj2_rad, obj2_posX, obj2_posY)) {
+						 objs[i]->GetPreLocation(&obj1_posX, &obj1_posY);
+						 objs[i]->SetLocation(obj1_posX, obj1_posY);
+						 objs[j]->GetPreLocation(&obj2_posX, &obj2_posY);
+						 objs[j]->SetLocation(obj2_posX, obj2_posY);
+						 // 충돌에 의한 반응
+						 CollisionReaction(objs[i], objs[j]);
+					 }
+				 }
+			 }
          }
       }
    }
@@ -174,7 +181,7 @@ void ScnMgr::FinalSendDataUpdate()
 		// ServerWinAPI.cpp의 ScnMgrThread에 업데이트된 sendData를 전달해주기 위해서
 		toSendData_InScnMgr[i].isVisible = objs[i]->GetIsVisible();
 		objs[i]->GetVelocity(&(toSendData_InScnMgr[i].velX), &(toSendData_InScnMgr[i].velX));
-		toSendData_InScnMgr[i].isVisible = objs[i]->GetIsVisible();
+		//toSendData_InScnMgr[i].isVisible = objs[i]->GetIsVisible();
 		objs[i]->GetLocation(&(toSendData_InScnMgr[i].posX), &(toSendData_InScnMgr[i].posY));
 	}
 }

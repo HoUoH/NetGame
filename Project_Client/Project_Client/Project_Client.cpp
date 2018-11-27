@@ -32,6 +32,9 @@ SOCKET sock; // 소켓
 char addrBuf[BUFSIZE + 1]; // 서버 IP 주소
 char fileBuf[BUFSIZE + 1]; // 서버에서 받을 파일 이름
 HANDLE hReadEvent, hWriteEvent; // 이벤트
+HANDLE hUpdateDataEvent;
+HANDLE hFinishedDrawAndUpdateEvent;
+
 HANDLE drawEvent;
 HWND hSendButton; // 보내기 버튼
 HWND hEdit1, hEdit2; // 편집 컨트롤
@@ -60,6 +63,10 @@ int recvn(SOCKET s, char *buf, int len, int flags);
 
 // TCP 클라이언트 시작 부분
 DWORD WINAPI ClientMain(LPVOID arg);
+
+DWORD WINAPI UpdateThread(LPVOID arg);
+
+
 
 //매 프레임 출력 함수
 void RenderScene(void);
@@ -217,7 +224,6 @@ DWORD WINAPI ClientMain(LPVOID arg)
 		WaitForSingleObject(hWriteEvent, INFINITE);
 
 		int len = 0;
-		char buf[BUFSIZE] = { NULL };
 
 		// 윈속 초기화
 		WSADATA wsa;
@@ -255,6 +261,11 @@ DWORD WINAPI ClientMain(LPVOID arg)
 	//자기 번호 받기
 	int id;
 	
+	
+	hUpdateDataEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
+	hFinishedDrawAndUpdateEvent = CreateEvent(NULL, FALSE, TRUE, NULL);
+	//CreateThread(NULL, 0, UpdateThread, NULL, 0, NULL);
+
 	retval = recvn(sock, (char*)&id, sizeof(int), 0);
 	g_ScnMgr->SetMyID(id);
 	recvData recvedData[MAX_OBJECTS];
@@ -271,7 +282,8 @@ DWORD WINAPI ClientMain(LPVOID arg)
 			if(i!=id)
 				g_ScnMgr->UpdateRecvData(recvedData[i].isVisible, recvedData[i].posX, recvedData[i].posY,i);
 		}
-
+		SetEvent(hUpdateDataEvent);
+		WaitForSingleObject(hFinishedDrawAndUpdateEvent, INFINITE);
 		g_ScnMgr->getSendData(&(tosendData.posX), &(tosendData.posY), &(tosendData.velX), &(tosendData.velY), &(tosendData.isVisible));	
 
 			//자기 위치 보내기
@@ -296,8 +308,12 @@ DWORD WINAPI ClientMain(LPVOID arg)
 	return 0;
 }
 
+
 void RenderScene(void)	//1초에 최소 60번 이상 출력되어야 하는 함수
 {
+	glClear(GL_COLOR_BUFFER_BIT);
+
+
 	if (prev_render_time == 0)
 		prev_render_time = timeGetTime();
 	//Elapsed Time
@@ -322,6 +338,7 @@ void RenderScene(void)	//1초에 최소 60번 이상 출력되어야 하는 함수
 	g_ScnMgr->ApplyForce(forceX, forceY, eTime);
 	g_ScnMgr->BreakMovement(W_KeyIsDown, S_KeyIsDown, D_KeyIsDown, A_KeyIsDown, eTime);
 	g_ScnMgr->Update(eTime);
+	g_ScnMgr->ObjectCollision();
 
 	// 클라입장
 	// send() 하고 / 서버가 계산한 최종 위치 recv()
@@ -333,6 +350,7 @@ void RenderScene(void)	//1초에 최소 60번 이상 출력되어야 하는 함수
 void Idle(void)
 {
 	RenderScene();
+	SetEvent(hFinishedDrawAndUpdateEvent);
 }
 
 void MouseInput(int button, int state, int x, int y)
@@ -405,7 +423,11 @@ DWORD WINAPI DrawMain(LPVOID arg) {
 
 	glewInit();
 
+	WaitForSingleObject(hUpdateDataEvent, INFINITE);
 	glutDisplayFunc(RenderScene);
+	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+
+
 	glutIdleFunc(Idle);
 	glutKeyboardFunc(KeyDownInput);
 	glutKeyboardUpFunc(KeyUpInput);
