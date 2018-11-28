@@ -49,17 +49,18 @@ void ScnMgr::InitObject()
       objs[i]->SetForce(0, 0);
       objs[i]->SetCoefFriction(0.5f);
       objs[i]->SetMass(1.f);
-      objs[i]->SetVelocity(1, 1);
+	  objs[i]->SetVelocity(rand() % 6000 - 3000, rand() % 6000 - 3000);
+      //objs[i]->SetVelocity(1, 1);
       objs[i]->SetSize(BALL_SIZE, BALL_SIZE);
       objs[i]->SetKind(KIND_BALL);
-      objs[i]->SetIsVisible(TRUE);
+      objs[i]->SetIsVisible(false);
    }
 
    for (int i = 0; i < MAX_OBJECTS; ++i) {
       bool check = true;
       objs[i]->SetLocation(rand() % (WINDOW_SIZEX - 100) - 250, rand() % (WINDOW_SIZEY - 100) - 250);
-      for (int j = i+1; j < MAX_OBJECTS; ++j) {
-         //if (i != j) {
+      for (int j = 0; j < MAX_OBJECTS; ++j) {
+         if (i != j) {
 			 
 			 float obj1_posX, obj1_posY, obj1_rad;
 			 float obj2_posX, obj2_posY, obj2_rad;
@@ -73,7 +74,7 @@ void ScnMgr::InitObject()
                check = false;
                break;
             }
-         //}
+         }
       }
       if (check == false) {
          i--;

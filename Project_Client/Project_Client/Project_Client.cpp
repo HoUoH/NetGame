@@ -64,10 +64,6 @@ int recvn(SOCKET s, char *buf, int len, int flags);
 // TCP 클라이언트 시작 부분
 DWORD WINAPI ClientMain(LPVOID arg);
 
-DWORD WINAPI UpdateThread(LPVOID arg);
-
-
-
 //매 프레임 출력 함수
 void RenderScene(void);
 
@@ -309,19 +305,22 @@ DWORD WINAPI ClientMain(LPVOID arg)
 }
 
 
-void RenderScene(void)	//1초에 최소 60번 이상 출력되어야 하는 함수
+void RenderScene(void)	//1초에 30번 출력되어야 하는 함수
 {
 	glClear(GL_COLOR_BUFFER_BIT);
-
 
 	if (prev_render_time == 0)
 		prev_render_time = timeGetTime();
 	//Elapsed Time
 	DWORD current_time = timeGetTime();
 	DWORD elapsed_time = current_time - prev_render_time;
-	prev_render_time = current_time;
+
 	float eTime = elapsed_time / 1000.f;//convert to second
 
+	if (eTime < 0.03)
+		return;
+
+	prev_render_time = current_time;
 
 	float forceX = 0.f, forceY = 0.f;
 	float amount = 3000.0f;		// 1N = 1000 기준
@@ -349,6 +348,7 @@ void RenderScene(void)	//1초에 최소 60번 이상 출력되어야 하는 함수
 
 void Idle(void)
 {
+	WaitForSingleObject(hUpdateDataEvent, INFINITE);
 	RenderScene();
 	SetEvent(hFinishedDrawAndUpdateEvent);
 }
@@ -423,7 +423,6 @@ DWORD WINAPI DrawMain(LPVOID arg) {
 
 	glewInit();
 
-	WaitForSingleObject(hUpdateDataEvent, INFINITE);
 	glutDisplayFunc(RenderScene);
 	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 

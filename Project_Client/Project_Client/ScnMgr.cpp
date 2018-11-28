@@ -68,24 +68,24 @@ ScnMgr::ScnMgr()
 		objs[i]->SetVelocity(0, 0);
 		objs[i]->SetSize(BALL_SIZE, BALL_SIZE);
 		objs[i]->SetKind(KIND_BALL);
-		objs[i]->SetIsVisible(true);
+		objs[i]->SetIsVisible(false);
 	}
 
-	for (int i = 0; i < MAX_OBJECTS; ++i) {
-		bool check = true;
-		objs[i]->SetLocation(rand() % (WINDOW_SIZEX - 100) - 250, rand() % (WINDOW_SIZEY - 100) - 250);
-		for (int j = i+1; j < MAX_OBJECTS; ++j) {
-			if (CollisionCheck(objs[i], objs[j])) {
-				check = false;
-				break;
-			}
-			
-		}
-		if (check == false) {
-			i--;
-			continue;
-		}
-	}
+	//for (int i = 0; i < MAX_OBJECTS; ++i) {
+	//	bool check = true;
+	//	objs[i]->SetLocation(rand() % (WINDOW_SIZEX - 100) - 250, rand() % (WINDOW_SIZEY - 100) - 250);
+	//	for (int j = i+1; j < MAX_OBJECTS; ++j) {
+	//		if (CollisionCheck(objs[i], objs[j])) {
+	//			check = false;
+	//			break;
+	//		}
+	//		
+	//	}
+	//	if (check == false) {
+	//		i--;
+	//		continue;
+	//	}
+	//}
 
 
 }
@@ -167,24 +167,25 @@ void ScnMgr::ObjectCollision()
 	for (int i = 0; i < MAX_OBJECTS; ++i) {
 		if (objs[i]->GetIsVisible()) {
 			WallCollision(objs[i]);
-			for (int j = i+1; j < MAX_OBJECTS; ++j) {
-				//if (i != j)
+			for (int j = 0; j < MAX_OBJECTS; ++j) {
 				// 11.28 익진
 				// 이부분 넣으면 캐릭터끼리 끼어서 못움직이는데
 				// 캐릭터 끼리는 충돌체크 하지 않는 방법도 생각해보자
 
 				// 위의 내용을 아래에 반영한 것
-				if (i == PlAYER_NUM) {
-					if (objs[j]->GetIsVisible()) {
-						if (CollisionCheck(objs[i], objs[j])) {
-							float posX, posY = 0;
-							objs[i]->GetPreLocation(&posX, &posY);
-							objs[i]->SetLocation(posX, posY);
-							objs[j]->GetPreLocation(&posX, &posY);
-							objs[j]->SetLocation(posX, posY);
-							// 충돌에 의한 반응
-							CollisionReaction(objs[i], objs[j]);
+				if (i != j) {
+					if (i == PlAYER_NUM) {
+						if (objs[j]->GetIsVisible()) {
+							if (CollisionCheck(objs[i], objs[j])) {
+								float posX, posY = 0;
+								objs[i]->GetPreLocation(&posX, &posY);
+								objs[i]->SetLocation(posX, posY);
+								objs[j]->GetPreLocation(&posX, &posY);
+								objs[j]->SetLocation(posX, posY);
+								// 충돌에 의한 반응
+								CollisionReaction(objs[i], objs[j]);
 
+							}
 						}
 					}
 				}
@@ -209,6 +210,7 @@ int ScnMgr::FindEmptyObjectSlot()
 void ScnMgr::joinClick(int key) {
 	
 	bool alive = objs[MyID]->GetIsVisible();
+
 	if (alive == true)
 		return;
 
@@ -216,16 +218,14 @@ void ScnMgr::joinClick(int key) {
 	//버그 있는거 같은데 이유를 모르겠네
 	if (click_join(key, alive)) {
 		bool check = true;
-		float posX = 0, posY = 0;		
+		float posX = 0, posY = 0;
 		//다시 시작 위치를 잡아줘야 한다.
 		//다시 시작 위치를 잡아주는 컬리전 함수
 		while (check)
 		{
 			posX = rand() % (WINDOW_SIZEX - 100) - 250;
 			posY = rand() % (WINDOW_SIZEX - 100) - 250;
-			check = JoinCollision(*objs, posX, posY);
-			//std::cout << posX << " " << posY << std::endl;
-			//std::cout << check << std::endl;
+			check = JoinCollision(posX, posY);
 		}
 		objs[MyID]->SetIsVisible(true);
 		objs[MyID]->SetAcc(0, 0);
@@ -233,6 +233,19 @@ void ScnMgr::joinClick(int key) {
 		objs[MyID]->SetVelocity(0, 0);
 		objs[MyID]->SetLocation(posX, posY);
 	}
+}
+
+bool ScnMgr::JoinCollision(float posx, float posy) {
+	for (int i = 0; i < MAX_OBJECTS; ++i) {
+		if (MyID != i) {
+			if (objs[i]->GetIsVisible()) {
+				if (CollisionCheck(objs[i], posx, posy))
+					return true;
+			}
+		}
+	}
+
+	return false;
 }
 
 void ScnMgr::RenderJoin() {

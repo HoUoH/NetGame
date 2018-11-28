@@ -142,15 +142,3 @@ void WallCollision(class object* obj)
 
 
 }
-
-bool JoinCollision(class object* obj, float posx, float posy){
-	for (int i = 0; i < MAX_OBJECTS; ++i) {
-		if (obj[i].GetIsVisible() == true) {
-			if (CollisionCheck(&obj[i], posx, posy))
-				return true;
-		}
-	}
-
-	//printf("¾È°ãÃÄ\n");
-	return false;
-}
