@@ -158,7 +158,7 @@ void ScnMgr::ObjectCollision()
 			// 캐릭터 끼리는 충돌체크 하지 않는 방법도 생각해보자
 
 			// 위의 내용을 아래에 반영한 것
-			 if (i < PlAYER_NUM) {	
+			 //if (i < PlAYER_NUM) {	
 				 if (objs[j]->GetIsVisible()) {
 					 objs[i]->GetLocation(&obj1_posX, &obj1_posY);
 					 objs[i]->GetSize(&obj1_rad, &obj1_rad);
@@ -174,7 +174,7 @@ void ScnMgr::ObjectCollision()
 						 CollisionReaction(objs[i], objs[j]);
 					 }
 				 }
-			 }
+			 //}
          }
       }
    }

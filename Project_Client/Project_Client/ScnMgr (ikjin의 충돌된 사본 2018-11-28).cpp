@@ -48,51 +48,60 @@ ScnMgr::ScnMgr()
 		objs[i]->SetForce(0, 0);
 		objs[i]->SetCoefFriction(1.f);
 		objs[i]->SetMass(1.f);
-		//objs[i]->SetVelocity(10, 10);
-		objs[i]->SetVelocity(0, 0);
+		objs[i]->SetVelocity(10, 10);
 		objs[i]->SetSize(PLAYER_SIZE, PLAYER_SIZE);
 		objs[i]->SetKind(KIND_HERO);
-		objs[i]->SetIsVisible(false);
+		objs[i]->SetIsVisible(true);
 	}
 
+	objs[HERO_ID]->SetIsVisible(false);
 
 	for (int i = PlAYER_NUM; i < MAX_OBJECTS; ++i) {
 		objs[i] = new object();
 		// 랜덤값으로 움직이게 만듦
-		//objs[i]->SetAcc(rand() % 100 - 50, rand() % 100 - 50);
-		objs[i]->SetAcc(0, 0);
+		objs[i]->SetAcc(rand() % 100 - 50, rand() % 100 - 50);
 		objs[i]->SetForce(0, 0);
 		objs[i]->SetCoefFriction(0.5f);
 		objs[i]->SetMass(1.f);
-		//objs[i]->SetVelocity(rand() % 6000 - 3000, rand() % 6000 - 3000);
-		objs[i]->SetVelocity(0, 0);
+		objs[i]->SetVelocity(rand() % 6000 - 3000, rand() % 6000 - 3000);
 		objs[i]->SetSize(BALL_SIZE, BALL_SIZE);
 		objs[i]->SetKind(KIND_BALL);
-		objs[i]->SetIsVisible(false);
+		objs[i]->SetIsVisible(true);
 	}
 
-	//for (int i = 0; i < MAX_OBJECTS; ++i) {
-	//	bool check = true;
-	//	objs[i]->SetLocation(rand() % (WINDOW_SIZEX - 100) - 250, rand() % (WINDOW_SIZEY - 100) - 250);
-	//	for (int j = i+1; j < MAX_OBJECTS; ++j) {
-	//		if (CollisionCheck(objs[i], objs[j])) {
-	//			check = false;
-	//			break;
-	//		}
-	//		
-	//	}
-	//	if (check == false) {
-	//		i--;
-	//		continue;
-	//	}
-	//}
+	// MAX_OBJECTS - 4는 벽을 제외하기 위해서
+	for (int i = 0; i < MAX_OBJECTS; ++i) {
+		bool check = true;
+		objs[i]->SetLocation(rand() % (WINDOW_SIZEX - 100) - 250, rand() % (WINDOW_SIZEY - 100) - 250);
+		for (int j = 0; j < MAX_OBJECTS; ++j) {
+			if (i != j) {
+				if (CollisionCheck(objs[i], objs[j])) {
+					check = false;
+					break;
+				}
+			}
+		}
+		if (check == false) {
+			i--;
+			continue;
+		}
+	}
 
 
 }
 int seq = 0;
 void ScnMgr::RenderScene()	//1초에 최소 60번 이상 출력되어야 하는 함수
 {
-	
+	//FrameCount++;
+	////내 노트북에선 프레임이 초당 3천번은 돌아서 이거 값 높여놨는데 원래는 한 300 주면 5초마다
+	////공 이동 제어하려고 했던거
+	//if (FrameCount > 300) {
+	//	FrameCount = 0;
+	//	for (int i = PlAYER_NUM; i < MAX_OBJECTS; ++i) {
+	//		objs[i]->PingpongBall();
+	//	}
+	//}
+
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	//glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 	m_Renderer->DrawTextureRect(0, 0, 0, 700, 700, 1, 1, 1, 1, Background_Texture);
@@ -132,7 +141,10 @@ float temp = 10.f;
 void ScnMgr::Update(float elapsed_time_in_sec)
 {
 	objs[MyID]->Update(elapsed_time_in_sec);
-
+	
+	for (int i = 0; i < MAX_OBJECTS; ++i) {
+		
+	}
 	//printf("사이즈 %d\n", sizeof(objs));
 }
 
@@ -167,26 +179,26 @@ void ScnMgr::ObjectCollision()
 	for (int i = 0; i < MAX_OBJECTS; ++i) {
 		if (objs[i]->GetIsVisible()) {
 			WallCollision(objs[i]);
-			for (int j = i+1; j < MAX_OBJECTS; ++j) {
-				// 11.28 익진
-				// 이부분 넣으면 캐릭터끼리 끼어서 못움직이는데
-				// 캐릭터 끼리는 충돌체크 하지 않는 방법도 생각해보자
+			for (int j = 0; j < MAX_OBJECTS; ++j) {
+				if (i != j)
+					if (objs[j]->GetIsVisible()) {
+						if (CollisionCheck(objs[i], objs[j])) {
+							float posX, posY = 0;
+							objs[i]->GetPreLocation(&posX, &posY);
+							objs[i]->SetLocation(posX, posY);
+							objs[j]->GetPreLocation(&posX, &posY);
+							objs[j]->SetLocation(posX, posY);
+							// 충돌에 의한 반응
+							CollisionReaction(objs[i], objs[j]);
 
-					//if (i < PlAYER_NUM) {
-						if (objs[j]->GetIsVisible()) {
-							if (CollisionCheck(objs[i], objs[j])) {
-								float posX, posY = 0;
-								objs[i]->GetPreLocation(&posX, &posY);
-								objs[i]->SetLocation(posX, posY);
-								objs[j]->GetPreLocation(&posX, &posY);
-								objs[j]->SetLocation(posX, posY);
-								// 충돌에 의한 반응
-								CollisionReaction(objs[i], objs[j]);
+							//캐릭터 - 공(떨궈진 공-먹어지기, 쏜 공-, 먹은 공)
 
-							}
+							//공 - 공
+
+							//DeleteObject(j);
+							//std::cout << "collision" << std::endl;
 						}
-					//}
-				
+					}
 			}
 		}
 	}
@@ -194,7 +206,6 @@ void ScnMgr::ObjectCollision()
 }
 
 
-/*
 int ScnMgr::FindEmptyObjectSlot()
 {
 	for (int i = 0; i < MAX_OBJECTS; ++i) {
@@ -203,12 +214,11 @@ int ScnMgr::FindEmptyObjectSlot()
 	}
 	std::cout << "object list is full.\n";
 	return -1;
-}*/
+}
 
 void ScnMgr::joinClick(int key) {
 	
 	bool alive = objs[MyID]->GetIsVisible();
-
 	if (alive == true)
 		return;
 
@@ -216,34 +226,23 @@ void ScnMgr::joinClick(int key) {
 	//버그 있는거 같은데 이유를 모르겠네
 	if (click_join(key, alive)) {
 		bool check = true;
-		float posX = 0, posY = 0;
+		float posX = 0, posY = 0;		
 		//다시 시작 위치를 잡아줘야 한다.
 		//다시 시작 위치를 잡아주는 컬리전 함수
 		while (check)
 		{
 			posX = rand() % (WINDOW_SIZEX - 100) - 250;
 			posY = rand() % (WINDOW_SIZEX - 100) - 250;
-			check = JoinCollision(posX, posY);
+			check = JoinCollision(*objs, posX, posY);
+			//std::cout << posX << " " << posY << std::endl;
+			//std::cout << check << std::endl;
 		}
-		objs[MyID]->SetIsVisible(true);
-		objs[MyID]->SetAcc(0, 0);
-		objs[MyID]->SetForce(0, 0);
-		objs[MyID]->SetVelocity(0, 0);
-		objs[MyID]->SetLocation(posX, posY);
+		objs[0]->SetIsVisible(true);
+		objs[0]->SetAcc(0, 0);
+		objs[0]->SetForce(0, 0);
+		objs[0]->SetVelocity(0, 0);
+		objs[0]->SetLocation(posX, posY);
 	}
-}
-
-bool ScnMgr::JoinCollision(float posx, float posy) {
-	for (int i = 0; i < MAX_OBJECTS; ++i) {
-		if (MyID != i) {
-			if (objs[i]->GetIsVisible()) {
-				if (CollisionCheck(objs[i], posx, posy))
-					return true;
-			}
-		}
-	}
-
-	return false;
 }
 
 void ScnMgr::RenderJoin() {
@@ -267,11 +266,10 @@ void ScnMgr::UpdateRecvData(bool isvisible, float posx, float posy, int i)
 	objs[i]->SetLocation(posx, posy);
 }
 
-void ScnMgr::getSendData(float * posX, float * posY, float * velX, float * velY, bool * isVisible)
+void ScnMgr::getSendData(float * posX, float * posY, float * velX, float * velY)
 {
 	objs[MyID]->GetLocation(posX, posY);
 	objs[MyID]->GetVelocity(velX, velY);
-	*isVisible = objs[MyID]->GetIsVisible();
 }
 
 

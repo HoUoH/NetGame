@@ -16,6 +16,9 @@
 #define SERVERPORT 9000
 #define BUFSIZE    512
 
+float eTime = 0;
+
+
 // 대화상자 프로시저
 BOOL CALLBACK DlgProc(HWND, UINT, WPARAM, LPARAM);
 // 편집 컨트롤 출력 함수
@@ -32,9 +35,6 @@ SOCKET sock; // 소켓
 char addrBuf[BUFSIZE + 1]; // 서버 IP 주소
 char fileBuf[BUFSIZE + 1]; // 서버에서 받을 파일 이름
 HANDLE hReadEvent, hWriteEvent; // 이벤트
-HANDLE hUpdateDataEvent;
-HANDLE hFinishedDrawAndUpdateEvent;
-
 HANDLE drawEvent;
 HWND hSendButton; // 보내기 버튼
 HWND hEdit1, hEdit2; // 편집 컨트롤
@@ -83,8 +83,8 @@ DWORD WINAPI DrawMain(LPVOID arg);
 
 #pragma pack(1)
 struct recvData {
+	int kind;
 	float posX, posY;
-	float velX, velY;
 	bool isVisible;
 }typedef recvData;
 #pragma pack()
@@ -93,11 +93,13 @@ struct recvData {
 struct sendData {
 	float posX, posY;
 	float velX, velY;
-	bool isVisible;
+	int specialKey;
 }typedef sendData;
 #pragma pack()
-int sendkey;
 
+sendData tosendData;
+
+int sendkey;
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	LPSTR lpCmdLine, int nCmdShow)
 {
@@ -213,13 +215,14 @@ int recvn(SOCKET s, char *buf, int len, int flags)
 DWORD WINAPI ClientMain(LPVOID arg)
 {
 	//계속 입력을 받아야 하기 때문에 while안에 넣는다
-	int retval;
 
-	//클릭 기다리기
+		int retval;
+		//클릭 기다리기
 	while (1) {
 		WaitForSingleObject(hWriteEvent, INFINITE);
 
 		int len = 0;
+		char buf[BUFSIZE] = { NULL };
 
 		// 윈속 초기화
 		WSADATA wsa;
@@ -250,85 +253,74 @@ DWORD WINAPI ClientMain(LPVOID arg)
 			break;
 		}
 	}
-
-	WaitForSingleObject(drawEvent, INFINITE);
-	// 서버와 데이터 통신
-
-	//자기 번호 받기
-	int id;
-	
-	
-	hUpdateDataEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
-	hFinishedDrawAndUpdateEvent = CreateEvent(NULL, FALSE, TRUE, NULL);
-	//CreateThread(NULL, 0, UpdateThread, NULL, 0, NULL);
-
-	retval = recvn(sock, (char*)&id, sizeof(int), 0);
-	g_ScnMgr->SetMyID(id);
-	recvData recvedData[MAX_OBJECTS];
-	sendData tosendData;
-	while (1) {
-
-		for (int i = 0; i < MAX_OBJECTS; i++) {
-			//전체 데이터 받기
-			retval = recvn(sock, (char*)&recvedData[i], sizeof(recvData), 0);
-			if (retval == SOCKET_ERROR) {
-				err_display((char*)"recv()");
-				break;
-			}
-		//	if(i!=id)
+		WaitForSingleObject(drawEvent, INFINITE);
+		// 서버와 데이터 통신
+		//자기 번호 받기
+		int id;
+		retval = recvn(sock, (char*)&id, sizeof(int), 0);
+		g_ScnMgr->SetMyID(id);
+		recvData recvedData[MAX_OBJECTS];
+		//sendData tosendData;
+		while (1) {
+			for (int i = 0; i < MAX_OBJECTS; i++) {
+				//전체 데이터 받기
+				retval = recvn(sock, (char*)&recvedData[i], sizeof(recvData), 0);
+				if (retval == SOCKET_ERROR) {
+					err_display((char*)"recv()");
+					break;
+				}
+				//if(i!=id)
+				//g_ScnMgr->Update(eTime);
 				g_ScnMgr->UpdateRecvData(recvedData[i].isVisible, recvedData[i].posX, recvedData[i].posY,i);
-		}
-		SetEvent(hUpdateDataEvent);
-		WaitForSingleObject(hFinishedDrawAndUpdateEvent, 20);
-		g_ScnMgr->getSendData(&(tosendData.posX), &(tosendData.posY), &(tosendData.velX), &(tosendData.velY), &(tosendData.isVisible));	
-
-			//자기 위치 보내기
-			retval = send(sock, (char*)&tosendData, sizeof(sendData), 0);
-			if (retval == SOCKET_ERROR) {
-				err_display((char*)"send()");
-				break;
 			}
-		
-	}
-	//EnableWindow(hSendButton, TRUE); // 보내기 버튼 활성화
-	SetEvent(hReadEvent); // 읽기 완료 알리기
+
+			g_ScnMgr->getSendData(&(tosendData.posX), &(tosendData.posY), &(tosendData.velX), &(tosendData.velY));
+			tosendData.specialKey = sendkey;
+			sendkey = 0;
+
+				//자기 위치 보내기
+				retval = send(sock, (char*)&tosendData, sizeof(sendData), 0);
+				if (retval == SOCKET_ERROR) {
+					err_display((char*)"send()");
+					break;
+				}
+			
+		}
+		//	EnableWindow(hSendButton, TRUE); // 보내기 버튼 활성화
+			SetEvent(hReadEvent); // 읽기 완료 알리기
 
 
-	// closesocket()
-	closesocket(sock);
+			// closesocket()
+			closesocket(sock);
 
-	// 윈속 종료
-	WSACleanup();
-	DisplayText((char*)"데이터 받기 끝!\r\n");
+			// 윈속 종료
+			WSACleanup();
+			DisplayText((char*)"데이터 받기 끝!\r\n");
 	
 	return 0;
 }
 
-
-void RenderScene(void)	//1초에 30번 출력되어야 하는 함수
+void RenderScene(void)	//1초에 최소 60번 이상 출력되어야 하는 함수
 {
-	glClear(GL_COLOR_BUFFER_BIT);
-
 	if (prev_render_time == 0)
 		prev_render_time = timeGetTime();
 	//Elapsed Time
 	DWORD current_time = timeGetTime();
 	DWORD elapsed_time = current_time - prev_render_time;
-
-	float eTime = elapsed_time / 1000.f;//convert to second
-
-	if (eTime < 0.015)
-		return;
-
 	prev_render_time = current_time;
+	eTime = elapsed_time / 1000.f;//convert to second
+
 
 	float forceX = 0.f, forceY = 0.f;
 	float amount = 3000.0f;		// 1N = 1000 기준
 
 	if (W_KeyIsDown)
 		forceY += amount;
-	if (A_KeyIsDown)
+	if (A_KeyIsDown) {
 		forceX -= amount;
+		tosendData.posX += 10;
+
+	}
 	if (S_KeyIsDown)
 		forceY -= amount;
 	if (D_KeyIsDown)
@@ -337,7 +329,6 @@ void RenderScene(void)	//1초에 30번 출력되어야 하는 함수
 	g_ScnMgr->ApplyForce(forceX, forceY, eTime);
 	g_ScnMgr->BreakMovement(W_KeyIsDown, S_KeyIsDown, D_KeyIsDown, A_KeyIsDown, eTime);
 	g_ScnMgr->Update(eTime);
-	g_ScnMgr->ObjectCollision();
 
 	// 클라입장
 	// send() 하고 / 서버가 계산한 최종 위치 recv()
@@ -348,9 +339,7 @@ void RenderScene(void)	//1초에 30번 출력되어야 하는 함수
 
 void Idle(void)
 {
-	WaitForSingleObject(hUpdateDataEvent, 20);
 	RenderScene();
-	SetEvent(hFinishedDrawAndUpdateEvent);
 }
 
 void MouseInput(int button, int state, int x, int y)
@@ -367,6 +356,7 @@ void KeyDownInput(unsigned char key, int x, int y)
 		break;
 	case 'a':
 		A_KeyIsDown = TRUE;
+		tosendData.posX += 10;
 		break;
 	case 's':
 		S_KeyIsDown = TRUE;
@@ -405,7 +395,6 @@ void SpecialKeyInput(int key, int x, int y)
 	//시작 키를 눌렀을 경우 (F1키)
 	if (key == 1) {
 		sendkey = 1;
-		g_ScnMgr->joinClick(sendkey);
 	}
 	RenderScene();
 }
@@ -424,9 +413,6 @@ DWORD WINAPI DrawMain(LPVOID arg) {
 	glewInit();
 
 	glutDisplayFunc(RenderScene);
-	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
-
-
 	glutIdleFunc(Idle);
 	glutKeyboardFunc(KeyDownInput);
 	glutKeyboardUpFunc(KeyUpInput);
@@ -436,8 +422,10 @@ DWORD WINAPI DrawMain(LPVOID arg) {
 
 	g_ScnMgr = new ScnMgr();
 	SetEvent(drawEvent);
-	glutMainLoop();
-	
+	while (1)
+	{
+		glutMainLoop();
+	}
 	delete g_ScnMgr;
 
 	return 0;
