@@ -1,4 +1,22 @@
 ﻿//////////////////
+// 11.29 홀  //
+///////////////////
+
+client
+//if(i!=id)  - 서버 데이터 클라가 받아서 자기자신도 업데이트하게함
+g_ScnMgr->UpdateRecvData(recvedData[i].isVisible, recvedData[i].posX, recvedData[i].posY,i);
+
+objectcollision		if(i!=PlAYER_NUM)  -> if (i < PlAYER_NUM)   오타 수정
+
+collisionreaction       - 충돌은 이미 체크 됫으니 걍 바로 캐릭터 사망시킴
+if (oA_Kind == KIND_HERO)
+{
+		oA->SetIsVisible(FALSE);
+}
+else if (oB_Kind == KIND_HERO) {
+		oB->SetIsVisible(FALSE);
+}
+//////////////////
 // 11.29 은상  //
 ///////////////////
 

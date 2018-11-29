@@ -104,14 +104,10 @@ void CollisionReaction(class object* oA, class object* oB)
 		{
 			if (oA_Kind == KIND_HERO)
 			{
-				float oB_VelMag = sqrt(oB_VX*oB_VX + oB_VY * oB_VY);
-				if (oB_VelMag > FLT_EPSILON)
-					oA->SetIsVisible(false);
+				oA->SetIsVisible(FALSE);
 			}
 			else if (oB_Kind == KIND_HERO) {
-				float oA_VelMag = sqrt(oA_VX*oA_VX + oA_VY * oA_VY);
-				if (oA_VelMag > FLT_EPSILON)
-					oB->SetIsVisible(false);
+				oB->SetIsVisible(FALSE);
 			}
 		}
 	

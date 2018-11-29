@@ -275,7 +275,7 @@ DWORD WINAPI ClientMain(LPVOID arg)
 				err_display((char*)"recv()");
 				break;
 			}
-			if(i!=id)
+		//	if(i!=id)
 				g_ScnMgr->UpdateRecvData(recvedData[i].isVisible, recvedData[i].posX, recvedData[i].posY,i);
 		}
 		SetEvent(hUpdateDataEvent);
