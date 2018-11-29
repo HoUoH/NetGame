@@ -6,13 +6,13 @@
 //공이 한쪽으로 모이는걸 방지하기 위해 쓴 인자
 int FrameCount = 0;
 sendData toSendData_InScnMgr[MAX_OBJECTS];
+int seq = 0;
 
 ScnMgr::ScnMgr()
 {
    InitObject();
 
 }
-int seq = 0;
 void ScnMgr::RenderScene()   //1초에 최소 60번 이상 출력되어야 하는 함수
 {
    
@@ -28,6 +28,11 @@ void ScnMgr::InitObject()
 
    for (int i = 0; i < MAX_OBJECTS; ++i) {
       objs[i] = NULL;
+	  toSendData_InScnMgr[i].isVisible = false;
+	  toSendData_InScnMgr[i].posX = 0;
+	  toSendData_InScnMgr[i].posY = 0;
+	  toSendData_InScnMgr[i].velX = 0;
+	  toSendData_InScnMgr[i].velY = 0;
    }
 
    for (int i = 0; i < PlAYER_NUM; ++i) {
@@ -53,10 +58,10 @@ void ScnMgr::InitObject()
       //objs[i]->SetVelocity(1, 1);
       objs[i]->SetSize(BALL_SIZE, BALL_SIZE);
       objs[i]->SetKind(KIND_BALL);
-      objs[i]->SetIsVisible(false);
+      objs[i]->SetIsVisible(true);
    }
 
-   for (int i = 0; i < MAX_OBJECTS; ++i) {
+   for (int i = PlAYER_NUM; i < MAX_OBJECTS; ++i) {
       bool check = true;
       objs[i]->SetLocation(rand() % (WINDOW_SIZEX - 100) - 250, rand() % (WINDOW_SIZEY - 100) - 250);
       for (int j = 0; j < MAX_OBJECTS; ++j) {
@@ -178,12 +183,25 @@ void ScnMgr::ObjectCollision()
 
 void ScnMgr::FinalSendDataUpdate()
 {
+	float velX, velY;
+	float posX, posY;
+
 	for (int i = 0; i < MAX_OBJECTS; i++) {
 		// ServerWinAPI.cpp의 ScnMgrThread에 업데이트된 sendData를 전달해주기 위해서
-		toSendData_InScnMgr[i].isVisible = objs[i]->GetIsVisible();
-		objs[i]->GetVelocity(&(toSendData_InScnMgr[i].velX), &(toSendData_InScnMgr[i].velX));
-		//toSendData_InScnMgr[i].isVisible = objs[i]->GetIsVisible();
-		objs[i]->GetLocation(&(toSendData_InScnMgr[i].posX), &(toSendData_InScnMgr[i].posY));
+		if (objs[i]->GetIsVisible())
+		{
+			toSendData_InScnMgr[i].isVisible = TRUE;
+		}
+		else
+		{
+			toSendData_InScnMgr[i].isVisible = FALSE;
+		}
+		objs[i]->GetVelocity(&velX, &velY);
+		objs[i]->GetLocation(&posX, &posY);
+		toSendData_InScnMgr[i].posX = posX;
+		toSendData_InScnMgr[i].posY = posY;
+		toSendData_InScnMgr[i].velX = velX;
+		toSendData_InScnMgr[i].velY = velY;
 	}
 }
 

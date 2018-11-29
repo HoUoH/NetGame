@@ -174,7 +174,7 @@ void ScnMgr::ObjectCollision()
 
 				// 위의 내용을 아래에 반영한 것
 				if (i != j) {
-					if (i == PlAYER_NUM) {
+					if (i != PlAYER_NUM) {
 						if (objs[j]->GetIsVisible()) {
 							if (CollisionCheck(objs[i], objs[j])) {
 								float posX, posY = 0;
