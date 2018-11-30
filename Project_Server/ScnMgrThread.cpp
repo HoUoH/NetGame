@@ -96,7 +96,7 @@ void ScnMgr::Update(float elapsed_time_in_sec)
    //이 부분에 서버에서 받은 데이터 objs[]에 최신화해야됨(받자마자 최신화하는 것도 방법)
 	
    //PlAYER_NUM+1  : 오브젝트 움직임 최신화
-   for (int i = PlAYER_NUM; i < MAX_OBJECTS; ++i) {
+   for (int i = 0; i < MAX_OBJECTS; ++i) {
       if (objs[i]->GetIsVisible()) {
          objs[i]->Update(elapsed_time_in_sec);
 
@@ -166,11 +166,7 @@ void ScnMgr::ObjectCollision()
 					 objs[j]->GetSize(&obj2_rad, &obj2_rad);
 					 if (CollisionCheck(obj1_rad, obj1_posX, obj1_posY,
 						 obj2_rad, obj2_posX, obj2_posY)) {
-						 objs[i]->GetPreLocation(&obj1_posX, &obj1_posY);
-						 objs[i]->SetLocation(obj1_posX, obj1_posY);
-						 objs[j]->GetPreLocation(&obj2_posX, &obj2_posY);
-						 objs[j]->SetLocation(obj2_posX, obj2_posY);
-						 // 충돌에 의한 반응
+						  // 충돌에 의한 반응
 						 CollisionReaction(objs[i], objs[j]);
 					 }
 				 }
@@ -214,8 +210,8 @@ void ScnMgr::CollisionReaction(object* oA, object* oB)
 
 	float oA_X, oA_Y = 0.f;
 	float oB_X, oB_Y = 0.f;
-	oA->GetLocation(&oA_X, &oA_Y);
-	oB->GetLocation(&oB_X, &oB_Y);
+	oA->GetPreLocation(&oA_X, &oA_Y);
+	oB->GetPreLocation(&oB_X, &oB_Y);
 
 	float oA_rad, oB_rad, s1, s2 = 0.f;
 	oA->GetSize(&oA_rad, &s1);
@@ -233,6 +229,7 @@ void ScnMgr::CollisionReaction(object* oA, object* oB)
 
 	if (oA_Kind == oB_Kind)
 	{
+		/*
 		float dx = oA_X - oB_X;
 		float dy = oA_Y - oB_Y;
 		float dab = fabsf(sqrt(dx*dx + dy * dy));
@@ -250,16 +247,19 @@ void ScnMgr::CollisionReaction(object* oA, object* oB)
 
 		oA->SetVelocity(vxAp, vyAp);
 		oB->SetVelocity(vyAp, vyBp);
-
+		oA->SetLocation(oA_X, oA_Y);
+		oB->SetLocation(oB_X, oB_Y);
+		*/
 	}
 	else
 	{
+	
 		if (oA_Kind == KIND_HERO)
 		{
-				oA->SetIsVisible(FALSE);
+			oA->SetIsVisible(false);
 		}
 		else if (oB_Kind == KIND_HERO) {
-				oB->SetIsVisible(FALSE);
+			oB->SetIsVisible(false);
 		}
 	}
 

@@ -275,11 +275,11 @@ DWORD WINAPI ClientMain(LPVOID arg)
 				err_display((char*)"recv()");
 				break;
 			}
-		//	if(i!=id)
+			//if(i!=id)
 				g_ScnMgr->UpdateRecvData(recvedData[i].isVisible, recvedData[i].posX, recvedData[i].posY,i);
 		}
 		SetEvent(hUpdateDataEvent);
-		WaitForSingleObject(hFinishedDrawAndUpdateEvent, 20);
+		WaitForSingleObject(hFinishedDrawAndUpdateEvent, 30);
 		g_ScnMgr->getSendData(&(tosendData.posX), &(tosendData.posY), &(tosendData.velX), &(tosendData.velY), &(tosendData.isVisible));	
 
 			//자기 위치 보내기
@@ -348,7 +348,7 @@ void RenderScene(void)	//1초에 30번 출력되어야 하는 함수
 
 void Idle(void)
 {
-	WaitForSingleObject(hUpdateDataEvent, 20);
+	WaitForSingleObject(hUpdateDataEvent, 30);
 	RenderScene();
 	SetEvent(hFinishedDrawAndUpdateEvent);
 }
