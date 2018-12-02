@@ -164,31 +164,32 @@ void ScnMgr::DeleteObject(unsigned int id)
 void ScnMgr::ObjectCollision()
 {
 	
-		if (objs[MyID]->GetIsVisible()) {
-			WallCollision(objs[MyID]);
-			for (int j = PlAYER_NUM; j < MAX_OBJECTS; ++j) {
-				// 11.28 익진
-				// 이부분 넣으면 캐릭터끼리 끼어서 못움직이는데
-				// 캐릭터 끼리는 충돌체크 하지 않는 방법도 생각해보자
+	if (objs[MyID]->GetIsVisible()) 
+	{
+		WallCollision(objs[MyID]);
+		/*
+		for (int j = PlAYER_NUM; j < MAX_OBJECTS; ++j) 
+		{
+			// 11.28 익진
+			// 이부분 넣으면 캐릭터끼리 끼어서 못움직이는데
+			// 캐릭터 끼리는 충돌체크 하지 않는 방법도 생각해보자
 
-				
-						if (objs[j]->GetIsVisible()) {
-							if (CollisionCheck(objs[MyID], objs[j])) {
-								float posX, posY = 0;
-								objs[MyID]->GetPreLocation(&posX, &posY);
-								objs[MyID]->SetLocation(posX, posY);
-								objs[j]->GetPreLocation(&posX, &posY);
-								objs[j]->SetLocation(posX, posY);
-								// 충돌에 의한 반응
-								CollisionReaction(objs[MyID], objs[j]);
 
-							}
-						}
-				
-				
+			if (objs[j]->GetIsVisible()) {
+				if (CollisionCheck(objs[MyID], objs[j])) {
+					float posX, posY = 0;
+					objs[MyID]->GetPreLocation(&posX, &posY);
+					objs[MyID]->SetLocation(posX, posY);
+					objs[j]->GetPreLocation(&posX, &posY);
+					objs[j]->SetLocation(posX, posY);
+					// 충돌에 의한 반응
+					CollisionReaction(objs[MyID], objs[j]);
+
+				}
 			}
 		}
-	
+		*/
+	}
 	
 }
 
@@ -233,11 +234,16 @@ void ScnMgr::joinClick(int key) {
 }
 
 bool ScnMgr::JoinCollision(float posx, float posy) {
-	for (int i = 0; i < MAX_OBJECTS; ++i) {
-		if (MyID != i) {
-			if (objs[i]->GetIsVisible()) {
+	for (int i = PlAYER_NUM; i < MAX_OBJECTS; ++i) 
+	{
+		if (MyID != i)
+		{
+			if (objs[i]->GetIsVisible()) 
+			{
 				if (CollisionCheck(objs[i], posx, posy))
+				{
 					return true;
+				}
 			}
 		}
 	}
@@ -273,4 +279,8 @@ void ScnMgr::getSendData(float * posX, float * posY, float * velX, float * velY,
 	*isVisible = objs[MyID]->GetIsVisible();
 }
 
+void ScnMgr::SetPlayerCollision(bool isVisible) 
+{
+	objs[MyID]->SetIsVisible(isVisible);
+}
 

@@ -22,7 +22,7 @@ object::~object()
 
 void object::Update(float elapsed_time_in_sec)
 {
-
+	
 	float gz = mass * 9.8;
 	float friction = coefFriction * gz;
 

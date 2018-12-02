@@ -275,8 +275,14 @@ DWORD WINAPI ClientMain(LPVOID arg)
 				err_display((char*)"recv()");
 				break;
 			}
-			//if(i!=id)
-				g_ScnMgr->UpdateRecvData(recvedData[i].isVisible, recvedData[i].posX, recvedData[i].posY,i);
+			if (i != id)
+			{
+				g_ScnMgr->UpdateRecvData(recvedData[i].isVisible, recvedData[i].posX, recvedData[i].posY, i);
+			}
+			else
+			{
+				g_ScnMgr->SetPlayerCollision(recvedData[i].isVisible);
+			}
 		}
 		SetEvent(hUpdateDataEvent);
 		WaitForSingleObject(hFinishedDrawAndUpdateEvent, 30);

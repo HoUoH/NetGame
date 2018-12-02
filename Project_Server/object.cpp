@@ -1,11 +1,10 @@
 #include "pch.h"
 #include "object.h"
-
+#include <time.h>
+#include "Server_Global.h"
 
 float maxVelocity = 500.f;
 float minVelocity = -500.f;
-
-
 
 object::object()
 {
@@ -22,6 +21,18 @@ object::~object()
 
 void object::Update(float elapsed_time_in_sec)
 {
+	//안먹으니 보류
+	/*
+	//플레이어는 무적 시간 계산만 하고 빠진다.
+	if (kind == KIND_HERO)
+	{
+		if(isVisible == true)
+		{
+			Invincible_time += elapsed_time_in_sec;
+		}
+		return;
+	}
+	*/
 
 	float gz = mass * 9.8;
 	float friction = coefFriction * gz;
@@ -200,6 +211,18 @@ bool object::GetIsVisible()
 {
 	return isVisible;
 }
+
+void object::SetInvincible_time(float time) 
+{
+	this->Invincible_time = time;
+}
+
+
+void object::GetInvincible_time(float *time)
+{
+	*time = this->Invincible_time;
+}
+
 
 void object::PingpongBall() {
 	velX = rand() % 6000 - 3000;

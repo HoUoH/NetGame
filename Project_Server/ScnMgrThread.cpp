@@ -45,6 +45,7 @@ void ScnMgr::InitObject()
       objs[i]->SetSize(PLAYER_SIZE, PLAYER_SIZE);
       objs[i]->SetKind(KIND_HERO);
       objs[i]->SetIsVisible(FALSE);
+	  objs[i]->SetInvincible_time(0.f);
    }
 
    for (int i = PlAYER_NUM; i < MAX_OBJECTS; ++i) {
@@ -96,11 +97,9 @@ void ScnMgr::Update(float elapsed_time_in_sec)
    //이 부분에 서버에서 받은 데이터 objs[]에 최신화해야됨(받자마자 최신화하는 것도 방법)
 	
    //PlAYER_NUM+1  : 오브젝트 움직임 최신화
-   for (int i = 0; i < MAX_OBJECTS; ++i) {
-      if (objs[i]->GetIsVisible()) {
-         objs[i]->Update(elapsed_time_in_sec);
-
-      }
+   for (int i = PlAYER_NUM; i < MAX_OBJECTS; ++i)
+   {
+        objs[i]->Update(elapsed_time_in_sec);
    }
       //printf("사이즈 %d\n", sizeof(objs));
 }
@@ -128,49 +127,73 @@ void ScnMgr::ObjectCollision()
 	float vx, vy;
 	float obj1_posX, obj1_posY, obj1_rad;
 	float obj2_posX, obj2_posY, obj2_rad;
+	float Invincible_time;
+	char WallCol;
 
-   for (int i = 0; i < MAX_OBJECTS; ++i) {
-      if (objs[i]->GetIsVisible()) {
-         //WallCollision(objs[i]);
-		 objs[i]->GetLocation(&posX, &posY);
-		 objs[i]->GetSize(&rad, &height);
-		 switch (WallCollision(posX, posY, rad, height))
+   for (int i = 0; i < MAX_OBJECTS; ++i) 
+   {
+      if (objs[i]->GetIsVisible()) 
+	  {
+
+		 //벽 충돌
+		 if (i >= PlAYER_NUM)
+		  {
+			  objs[i]->GetLocation(&posX, &posY);
+			  objs[i]->GetSize(&rad, &height);
+			  WallCol = WallCollision(posX, posY, rad, height);
+			  switch (WallCol)
+			  {
+			  case 'r':
+				  objs[i]->GetPreLocation(&posX, &posY);
+				  objs[i]->SetLocation(posX, posY);
+				  objs[i]->GetVelocity(&vx, &vy);
+				  objs[i]->SetVelocity(-vx * 2.f, vy);
+				  break;
+			  case 'u':
+				  objs[i]->GetPreLocation(&posX, &posY);
+				  objs[i]->SetLocation(posX, posY);
+				  objs[i]->GetVelocity(&vx, &vy);
+				  objs[i]->SetVelocity(vx, -vy * 2.f);
+				  break;
+			  default:
+				  break;
+			  }
+		  }
+		 
+		 // 안먹으니 보류
+		 /*
+		 //플레이어 무적 시간 할당
+		 if (i < PlAYER_NUM)
 		 {
-		 case 'r':
-			 objs[i]->GetPreLocation(&posX, &posY);
-			 objs[i]->SetLocation(posX, posY);
-			 objs[i]->GetVelocity(&vx, &vy);
-			 objs[i]->SetVelocity(-vx * 2.f, vy);
-			 break;
-		 case 'u':
-			 objs[i]->GetPreLocation(&posX, &posY);
-			 objs[i]->SetLocation(posX, posY);
-			 objs[i]->GetVelocity(&vx, &vy);
-			 objs[i]->SetVelocity(vx, -vy * 2.f);
-			 break;
-		 default:
-			 break;
+			 objs[i]->GetInvincible_time(&Invincible_time);
+			 if (Invincible_time < DEATH_START_TIME)
+			 {
+				 continue;
+			 }
 		 }
-         for (int j = i+1; j < MAX_OBJECTS; ++j) {
-           // if (i != j)
-			 // 11.28 익진
-			// 이부분 넣으면 캐릭터끼리 끼어서 못움직이는데
-			// 캐릭터 끼리는 충돌체크 하지 않는 방법도 생각해보자
+		 */
 
-			// 위의 내용을 아래에 반영한 것
-			 //if (i < PlAYER_NUM) {	
-				 if (objs[j]->GetIsVisible()) {
-					 objs[i]->GetLocation(&obj1_posX, &obj1_posY);
-					 objs[i]->GetSize(&obj1_rad, &obj1_rad);
-					 objs[j]->GetLocation(&obj2_posX, &obj2_posY);
-					 objs[j]->GetSize(&obj2_rad, &obj2_rad);
-					 if (CollisionCheck(obj1_rad, obj1_posX, obj1_posY,
-						 obj2_rad, obj2_posX, obj2_posY)) {
-						  // 충돌에 의한 반응
-						 CollisionReaction(objs[i], objs[j]);
-					 }
-				 }
-			 //}
+         for (int j = i+1; j < MAX_OBJECTS; ++j) 
+		 {
+			 
+			 // 플레이어끼린 충돌하지 않는다.
+			 if (j < PlAYER_NUM)
+			 {
+				 continue;
+			 }
+
+			 if (objs[j]->GetIsVisible()) 
+			 {
+			 	 objs[i]->GetLocation(&obj1_posX, &obj1_posY);
+			 	 objs[i]->GetSize(&obj1_rad, &obj1_rad);
+			 	 objs[j]->GetLocation(&obj2_posX, &obj2_posY);
+			 	 objs[j]->GetSize(&obj2_rad, &obj2_rad);
+			 	 if (CollisionCheck(obj1_rad, obj1_posX, obj1_posY,
+			 		 obj2_rad, obj2_posX, obj2_posY)) {
+			 		  // 충돌에 의한 반응
+			 		 CollisionReaction(objs[i], objs[j]);
+			 	 }
+			 }
          }
       }
    }
@@ -227,40 +250,16 @@ void ScnMgr::CollisionReaction(object* oA, object* oB)
 	oA->GetMass(&oA_M);
 	oB->GetMass(&oB_M);
 
-	if (oA_Kind == oB_Kind)
+
+	if (oA_Kind == KIND_HERO)
 	{
-		/*
-		float dx = oA_X - oB_X;
-		float dy = oA_Y - oB_Y;
-		float dab = fabsf(sqrt(dx*dx + dy * dy));
-
-		float sinTheta = dy / fabsf(sqrt(dx*dx + dy * dy));
-		float cosTheta = dx / fabsf(sqrt(dx*dx + dy * dy));
-
-		float vxAp = (oA_M - 1.f * oB_M) / (oA_M + oB_M)*(oA_VX*cosTheta + oA_VY * sinTheta) +
-			(oB_M + 1.f * oB_M) / (oA_M + oB_M)*(oB_VX*cosTheta + oB_VY * sinTheta);
-		float vxBp = (oA_M + 1.f * oA_M) / (oA_M + oB_M)*(oA_VX*cosTheta + oA_VY * sinTheta) +
-			(oB_M - 1.f * oA_M) / (oA_M + oB_M)*(oB_VX*cosTheta + oB_VY * sinTheta);
-
-		float vyAp = oA_VX * (-sinTheta) + oA_VY * cosTheta;
-		float vyBp = oB_VX * (-sinTheta) + oB_VY * cosTheta;
-
-		oA->SetVelocity(vxAp, vyAp);
-		oB->SetVelocity(vyAp, vyBp);
-		oA->SetLocation(oA_X, oA_Y);
-		oB->SetLocation(oB_X, oB_Y);
-		*/
+		//oA->SetInvincible_time(0.f);
+		oA->SetIsVisible(false);
 	}
-	else
+	else if (oB_Kind == KIND_HERO) 
 	{
-	
-		if (oA_Kind == KIND_HERO)
-		{
-			oA->SetIsVisible(false);
-		}
-		else if (oB_Kind == KIND_HERO) {
-			oB->SetIsVisible(false);
-		}
+		//oB->SetInvincible_time(0.f);
+		oB->SetIsVisible(false);
 	}
 
 

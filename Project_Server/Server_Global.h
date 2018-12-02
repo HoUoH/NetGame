@@ -17,6 +17,8 @@
 #define PLAYER_SIZE 25
 #define BALL_SIZE 15
 
+#define DEATH_START_TIME 0.5
+
 #pragma pack(1)
 struct recvData {
 	float posX, posY;

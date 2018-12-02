@@ -23,6 +23,8 @@ private:
 	float coefFriction;
 	float elapsed_time_in_sec;
 
+	float Invincible_time;
+
 	bool isVisible;
 
 public:
@@ -59,6 +61,9 @@ public:
 
 	void SetIsVisible(bool isVisible);
 	bool GetIsVisible();
+
+	void SetInvincible_time(float time);
+	void GetInvincible_time(float *time);
 
 	void PingpongBall();
 
