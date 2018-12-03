@@ -1,16 +1,17 @@
 #include "pch.h"
 #include "object.h"
 #include <time.h>
-#include "Server_Global.h"
 
 float maxVelocity = 500.f;
 float minVelocity = -500.f;
+float ChangeBall;
 
 object::object()
 {
 	posX = 0;   posY = 0;
 	sizeX = 0;   sizeY = 0;
 	accX = 0;   accY = 0;
+	ChangeBall = 0;
 
 }
 
@@ -33,6 +34,13 @@ void object::Update(float elapsed_time_in_sec)
 		return;
 	}
 	*/
+	ChangeBall += elapsed_time_in_sec;
+	
+	if (ChangeBall > 5)
+	{
+		ChangeBall = 0;
+		PingpongBall();
+	}
 
 	float gz = mass * 9.8;
 	float friction = coefFriction * gz;
@@ -225,6 +233,6 @@ void object::GetInvincible_time(float *time)
 
 
 void object::PingpongBall() {
-	velX = rand() % 6000 - 3000;
-	velY = rand() % 6000 - 3000;
+	velX = rand() % 1000 - 500;
+	velY = rand() % 1000 - 500;
 }

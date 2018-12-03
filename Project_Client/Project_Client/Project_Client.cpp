@@ -341,7 +341,8 @@ void RenderScene(void)	//1초에 30번 출력되어야 하는 함수
 		forceX += amount;
 
 	g_ScnMgr->ApplyForce(forceX, forceY, eTime);
-	g_ScnMgr->BreakMovement(W_KeyIsDown, S_KeyIsDown, D_KeyIsDown, A_KeyIsDown, eTime);
+	//덜덜거리는거 없에기 위해서 일단 빼버림
+	//g_ScnMgr->BreakMovement(W_KeyIsDown, S_KeyIsDown, D_KeyIsDown, A_KeyIsDown, eTime);
 	g_ScnMgr->Update(eTime);
 	g_ScnMgr->ObjectCollision();
 

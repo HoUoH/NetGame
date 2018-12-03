@@ -41,7 +41,7 @@ bool CollisionCheck(object *oA, float posx, float posy)
 	oA->GetLocation(&x1, &y1);
 
 
-	float colLenLimit = oA_rad / 2 + PLAYER_SIZE / 2;
+	float colLenLimit = oA_rad * 2 + PLAYER_SIZE * 2;
 	float distBtwPoints = sqrt((posx - x1)*(posx - x1) + (posy - y1)*(posy - y1));
 
 
