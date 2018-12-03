@@ -167,7 +167,7 @@ void ScnMgr::ObjectCollision()
 	if (objs[MyID]->GetIsVisible()) 
 	{
 		WallCollision(objs[MyID]);
-		/*
+
 		for (int j = PlAYER_NUM; j < MAX_OBJECTS; ++j) 
 		{
 			// 11.28 익진
@@ -177,18 +177,17 @@ void ScnMgr::ObjectCollision()
 
 			if (objs[j]->GetIsVisible()) {
 				if (CollisionCheck(objs[MyID], objs[j])) {
-					float posX, posY = 0;
-					objs[MyID]->GetPreLocation(&posX, &posY);
-					objs[MyID]->SetLocation(posX, posY);
-					objs[j]->GetPreLocation(&posX, &posY);
-					objs[j]->SetLocation(posX, posY);
+					//float posX, posY = 0;
+					//objs[MyID]->GetPreLocation(&posX, &posY);
+					//objs[MyID]->SetLocation(posX, posY);
+					//objs[j]->GetPreLocation(&posX, &posY);
+					//objs[j]->SetLocation(posX, posY);
 					// 충돌에 의한 반응
 					CollisionReaction(objs[MyID], objs[j]);
 
 				}
 			}
 		}
-		*/
 	}
 	
 }
@@ -234,7 +233,7 @@ void ScnMgr::joinClick(int key) {
 }
 
 bool ScnMgr::JoinCollision(float posx, float posy) {
-	for (int i = PlAYER_NUM; i < MAX_OBJECTS; ++i) 
+	for (int i = 0; i < MAX_OBJECTS; ++i) 
 	{
 		if (MyID != i)
 		{

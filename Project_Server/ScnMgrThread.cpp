@@ -173,6 +173,7 @@ void ScnMgr::ObjectCollision()
 		 }
 		 */
 
+		 /*
          for (int j = i+1; j < MAX_OBJECTS; ++j) 
 		 {
 			 
@@ -195,6 +196,7 @@ void ScnMgr::ObjectCollision()
 			 	 }
 			 }
          }
+		 */
       }
    }
 
