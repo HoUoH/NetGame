@@ -33,13 +33,14 @@ ScnMgr::ScnMgr()
 	Character_Texture[1] = m_Renderer->CreatePngTexture((char*)"./Textures/Player_2.png");
 	Character_Texture[2] = m_Renderer->CreatePngTexture((char*)"./Textures/Player_3.png");
 	Character_Texture[3] = m_Renderer->CreatePngTexture((char*)"./Textures/Player_4.png");
-	Character_Texture[4] = m_Renderer->CreatePngTexture((char*)"./Textures/Player_5.png");
-	Character_Texture[5] = m_Renderer->CreatePngTexture((char*)"./Textures/Player_6.png");
-	Character_Texture[6] = m_Renderer->CreatePngTexture((char*)"./Textures/Player_7.png");
-	Character_Texture[7] = m_Renderer->CreatePngTexture((char*)"./Textures/Player_8.png");
+	//플레이어 4명만 함 나머진 보류
+	//Character_Texture[4] = m_Renderer->CreatePngTexture((char*)"./Textures/Player_5.png");
+	//Character_Texture[5] = m_Renderer->CreatePngTexture((char*)"./Textures/Player_6.png");
+	//Character_Texture[6] = m_Renderer->CreatePngTexture((char*)"./Textures/Player_7.png");
+	//Character_Texture[7] = m_Renderer->CreatePngTexture((char*)"./Textures/Player_8.png");
 	Ball_Texture = m_Renderer->CreatePngTexture((char*)"./Textures/PocketBall.png");
 	Join_Texture = m_Renderer->CreatePngTexture((char*)"./Textures/JOIN.png");
-	Background_Texture = m_Renderer->CreatePngTexture((char*)"./Textures/Background.png");
+	Background_Texture = m_Renderer->CreatePngTexture((char*)"./Textures/Background2.png");
 
 
 	for (int i = 0; i < PlAYER_NUM; ++i) {
