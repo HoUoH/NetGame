@@ -1,8 +1,6 @@
 /.vs
-/Project_Server/x64
 /Project_Server/.vs
 /Project_Server/v15
-/Project_Client/x64
 /Project_Client/.vs
 /Project_Server/v15
 *.exe
