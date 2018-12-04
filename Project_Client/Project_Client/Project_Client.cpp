@@ -45,6 +45,7 @@ BOOL W_KeyIsDown = false;
 BOOL A_KeyIsDown = false;
 BOOL S_KeyIsDown = false;
 BOOL D_KeyIsDown = false;
+BOOL R_KeyIsDown = false;
 
 // 대화상자 프로시저
 BOOL CALLBACK DlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
@@ -286,8 +287,20 @@ DWORD WINAPI ClientMain(LPVOID arg)
 		}
 		SetEvent(hUpdateDataEvent);
 		WaitForSingleObject(hFinishedDrawAndUpdateEvent, 30);
-		g_ScnMgr->getSendData(&(tosendData.posX), &(tosendData.posY), &(tosendData.velX), &(tosendData.velY), &(tosendData.isVisible));	
 
+		float sendPosX, sendPosY, sendVelX, sendVelY;
+		bool sendIsVisible;
+		g_ScnMgr->getSendData(&sendPosX, &sendPosY, &sendVelX, &sendVelY, &sendIsVisible);
+
+		tosendData.posX = sendPosX;
+		tosendData.posY = sendPosY;
+		tosendData.velX = sendVelX;
+		tosendData.velY = sendVelY;
+		if (R_KeyIsDown)
+		{
+		//	tosendData.isVisible = sendIsVisible;
+			tosendData.isVisible = true;
+		}
 			//자기 위치 보내기
 			retval = send(sock, (char*)&tosendData, sizeof(sendData), 0);
 			if (retval == SOCKET_ERROR) {
@@ -339,6 +352,7 @@ void RenderScene(void)	//1초에 30번 출력되어야 하는 함수
 		forceY -= amount;
 	if (D_KeyIsDown)
 		forceX += amount;
+	
 
 	g_ScnMgr->ApplyForce(forceX, forceY, eTime);
 	//덜덜거리는거 없에기 위해서 일단 빼버림
@@ -381,6 +395,8 @@ void KeyDownInput(unsigned char key, int x, int y)
 	case 'd':
 		D_KeyIsDown = TRUE;
 		break;
+	case 'r' ||'R':
+		R_KeyIsDown = TRUE;
 	default:
 		break;
 	}
@@ -400,6 +416,8 @@ void KeyUpInput(unsigned char key, int x, int y) {
 	case 'd':
 		D_KeyIsDown = FALSE;
 		break;
+	case 'r' || 'R':
+		R_KeyIsDown = FALSE;
 	default:
 
 		break;

@@ -218,12 +218,12 @@ void ScnMgr::joinClick(int key) {
 		//다시 시작 위치를 잡아주는 컬리전 함수
 		posX = rand() % (WINDOW_SIZEX - 100) - 250;
 		posY = rand() % (WINDOW_SIZEX - 100) - 250;
-		Invincible_time = 0;
-		objs[MyID]->SetIsVisible(true);
 		objs[MyID]->SetAcc(0, 0);
 		objs[MyID]->SetForce(0, 0);
 		objs[MyID]->SetVelocity(0, 0);
 		objs[MyID]->SetLocation(posX, posY);
+		Invincible_time = 0;
+		objs[MyID]->SetIsVisible(true);
 	}
 }
 
