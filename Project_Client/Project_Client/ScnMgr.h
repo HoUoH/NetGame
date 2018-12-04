@@ -18,7 +18,7 @@ public:
 	void ObjectCollision();
 	/*int FindEmptyObjectSlot();*/
 	//게임 새로 시작 및 시작
-	void joinClick(int key);
+	void joinClick(char key);
 	void RenderJoin();
 	void SetMyID(int i);
 	void UpdateRecvData(bool isvisible, float posx, float posy, int i);

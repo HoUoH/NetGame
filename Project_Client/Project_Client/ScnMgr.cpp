@@ -169,8 +169,8 @@ void ScnMgr::DeleteObject(unsigned int id)
 void ScnMgr::ObjectCollision()
 {
 	
-	if (objs[MyID]->GetIsVisible()) 
-	{
+	//if (objs[MyID]->GetIsVisible()) 
+	//{
 		WallCollision(objs[MyID]);
 
 		if (Invincible_time > 3) 
@@ -198,20 +198,31 @@ void ScnMgr::ObjectCollision()
 			}
 		}
 
-	}
+	//}
 	
 }
 
-void ScnMgr::joinClick(int key) {
+void ScnMgr::joinClick(char key) {
 	
 	bool alive = objs[MyID]->GetIsVisible();
 
 	if (alive == true)
 		return;
 
+	float posX = 0, posY = 0;
+	if (!alive && key == 'r') {
+		posX = float(rand() % (WINDOW_SIZEX - 100) - 250);
+		posY = float(rand() % (WINDOW_SIZEX - 100) - 250);
+		objs[MyID]->SetAcc(0, 0);
+		objs[MyID]->SetForce(0, 0);
+		objs[MyID]->SetVelocity(0, 0);
+		objs[MyID]->SetLocation(posX, posY);
+		Invincible_time = 0;
+		objs[MyID]->SetIsVisible(true);
+	}
 	//죽었는데 다시시작 키(F1)를 눌렀을 시
 	//버그 있는거 같은데 이유를 모르겠네
-	if (click_join(key, alive)) {
+	/*if (click_join(key, alive)) {
 		bool check = true;
 		float posX = 0, posY = 0;
 		//다시 시작 위치를 잡아줘야 한다.
@@ -224,7 +235,7 @@ void ScnMgr::joinClick(int key) {
 		objs[MyID]->SetLocation(posX, posY);
 		Invincible_time = 0;
 		objs[MyID]->SetIsVisible(true);
-	}
+	}*/
 }
 
 void ScnMgr::RenderJoin() {

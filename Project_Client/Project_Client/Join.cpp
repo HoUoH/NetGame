@@ -12,7 +12,7 @@ BOOL death_check(BOOL heroVisible) {
 
 //죽었을때 다시 시작(F1)키를 눌렀을 때 체크
 BOOL click_join(int key, BOOL heroVisible) {
-	if (key == 1 && heroVisible == false)
+	if (key == 'r' && heroVisible == false)
 		return true;
 
 	return false;

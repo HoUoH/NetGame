@@ -51,11 +51,11 @@ void ScnMgr::InitObject()
    for (int i = PlAYER_NUM; i < MAX_OBJECTS; ++i) {
       objs[i] = new object();
       // 랜덤값으로 움직이게 만듦
-      objs[i]->SetAcc(rand() % 100 - 50, rand() % 100 - 50);
+      objs[i]->SetAcc(float(rand() % 100 - 50), float(rand() % 100 - 50));
       objs[i]->SetForce(0, 0);
       objs[i]->SetCoefFriction(0.5f);
       objs[i]->SetMass(1.f);
-	  objs[i]->SetVelocity(rand() % 6000 - 3000, rand() % 6000 - 3000);
+	  objs[i]->SetVelocity(float(rand() % 6000 - 3000), float(rand() % 6000 - 3000));
       //objs[i]->SetVelocity(1, 1);
       objs[i]->SetSize(BALL_SIZE, BALL_SIZE);
       objs[i]->SetKind(KIND_BALL);
@@ -64,7 +64,7 @@ void ScnMgr::InitObject()
 
    for (int i = PlAYER_NUM; i < MAX_OBJECTS; ++i) {
       bool check = true;
-      objs[i]->SetLocation(rand() % (WINDOW_SIZEX - 100) - 250, rand() % (WINDOW_SIZEY - 100) - 250);
+      objs[i]->SetLocation(float(rand() % (WINDOW_SIZEX - 100) - 250), float(rand() % (WINDOW_SIZEY - 100) - 250));
       for (int j = 0; j < MAX_OBJECTS; ++j) {
          if (i != j) {
 			 
@@ -125,15 +125,15 @@ void ScnMgr::ObjectCollision()
 	float posX, posY;
 	float rad, height;
 	float vx, vy;
-	float obj1_posX, obj1_posY, obj1_rad;
-	float obj2_posX, obj2_posY, obj2_rad;
-	float Invincible_time;
+	//float obj1_posX, obj1_posY, obj1_rad;
+	//float obj2_posX, obj2_posY, obj2_rad;
+	//float Invincible_time;
 	char WallCol;
 
    for (int i = 0; i < MAX_OBJECTS; ++i) 
    {
-      if (objs[i]->GetIsVisible()) 
-	  {
+      //if (objs[i]->GetIsVisible()) 
+	  //{
 
 		 //벽 충돌
 		 if (i >= PlAYER_NUM)
@@ -197,7 +197,7 @@ void ScnMgr::ObjectCollision()
 			 }
          }
 		 */
-      }
+      //}
    }
 
 }
@@ -209,20 +209,21 @@ void ScnMgr::FinalSendDataUpdate()
 
 	for (int i = 0; i < MAX_OBJECTS; i++) {
 		// ServerWinAPI.cpp의 ScnMgrThread에 업데이트된 sendData를 전달해주기 위해서
-		if (objs[i]->GetIsVisible())
+		/*if (objs[i]->GetIsVisible())
 		{
 			toSendData_InScnMgr[i].isVisible = TRUE;
 		}
 		else
 		{
 			toSendData_InScnMgr[i].isVisible = FALSE;
-		}
+		}*/
 		objs[i]->GetVelocity(&velX, &velY);
 		objs[i]->GetLocation(&posX, &posY);
 		toSendData_InScnMgr[i].posX = posX;
 		toSendData_InScnMgr[i].posY = posY;
 		toSendData_InScnMgr[i].velX = velX;
 		toSendData_InScnMgr[i].velY = velY;
+		toSendData_InScnMgr[i].isVisible = objs[i]->GetIsVisible();
 	}
 }
 

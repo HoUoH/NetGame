@@ -296,11 +296,9 @@ DWORD WINAPI ClientMain(LPVOID arg)
 		tosendData.posY = sendPosY;
 		tosendData.velX = sendVelX;
 		tosendData.velY = sendVelY;
-		if (R_KeyIsDown)
-		{
-		//	tosendData.isVisible = sendIsVisible;
-			tosendData.isVisible = true;
-		}
+		tosendData.isVisible = sendIsVisible;
+		
+
 			//자기 위치 보내기
 			retval = send(sock, (char*)&tosendData, sizeof(sendData), 0);
 			if (retval == SOCKET_ERROR) {
@@ -395,8 +393,9 @@ void KeyDownInput(unsigned char key, int x, int y)
 	case 'd':
 		D_KeyIsDown = TRUE;
 		break;
-	case 'r' ||'R':
+	case 'r':
 		R_KeyIsDown = TRUE;
+		g_ScnMgr->joinClick('r');
 	default:
 		break;
 	}
@@ -416,7 +415,7 @@ void KeyUpInput(unsigned char key, int x, int y) {
 	case 'd':
 		D_KeyIsDown = FALSE;
 		break;
-	case 'r' || 'R':
+	case 'r':
 		R_KeyIsDown = FALSE;
 	default:
 
@@ -425,6 +424,7 @@ void KeyUpInput(unsigned char key, int x, int y) {
 	RenderScene();
 }
 
+/*
 void SpecialKeyInput(int key, int x, int y)
 {
 	//시작 키를 눌렀을 경우 (F1키)
@@ -433,7 +433,7 @@ void SpecialKeyInput(int key, int x, int y)
 		g_ScnMgr->joinClick(sendkey);
 	}
 	RenderScene();
-}
+}*/
 
 DWORD WINAPI DrawMain(LPVOID arg) {
 	
@@ -455,7 +455,7 @@ DWORD WINAPI DrawMain(LPVOID arg) {
 	glutIdleFunc(Idle);
 	glutKeyboardFunc(KeyDownInput);
 	glutKeyboardUpFunc(KeyUpInput);
-	glutSpecialFunc(SpecialKeyInput);
+	//glutSpecialFunc(SpecialKeyInput);
 	glutSetKeyRepeat(GLUT_KEY_REPEAT_OFF);
 	glutMouseFunc(MouseInput);
 
