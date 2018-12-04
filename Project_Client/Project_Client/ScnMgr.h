@@ -23,7 +23,6 @@ public:
 	void SetMyID(int i);
 	void UpdateRecvData(bool isvisible, float posx, float posy, int i);
 	void getSendData(float * posX, float * posY, float * velX, float * velY, bool * isVisible);
-	bool JoinCollision(float posx, float posy);
 	void SetPlayerCollision(bool isVisible);
 private:
 	Renderer *m_Renderer;
