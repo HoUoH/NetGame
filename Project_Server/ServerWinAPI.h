@@ -26,7 +26,7 @@ struct sockAttr {
 //}typedef recvData;
 //#pragma pack()
 
-#pragma pack(1)
+
 struct objects {
 	int kind;					//종류
 	float posX, posY;			//위치
@@ -42,7 +42,7 @@ struct objects {
 	float elapsed_time_in_sec;	//경과시간
 	bool isVisible;				//표시여부
 }typedef objects;
-#pragma pack()
+
 
 // ServerMainThread
 bool isExistPlayer[PlAYER_NUM] = { false };

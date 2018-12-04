@@ -253,16 +253,16 @@ void ScnMgr::SetMyID(int i)
 	MyID = i;
 }
 
-void ScnMgr::UpdateRecvData(bool isvisible, float posx, float posy, int i)
+void ScnMgr::UpdateRecvData(float posx, float posy, bool isvisible, int i)
 {
-	objs[i]->SetIsVisible(isvisible);
 	objs[i]->SetLocation(posx, posy);
+	objs[i]->SetIsVisible(isvisible);
 }
 
-void ScnMgr::getSendData(float * posX, float * posY, float * velX, float * velY, bool * isVisible)
+void ScnMgr::getSendData(float * posX, float * posY, bool * isVisible)
 {
 	objs[MyID]->GetLocation(posX, posY);
-	objs[MyID]->GetVelocity(velX, velY);
+	//objs[MyID]->GetVelocity(velX, velY);
 	*isVisible = objs[MyID]->GetIsVisible();
 }
 

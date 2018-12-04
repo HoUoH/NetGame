@@ -77,7 +77,7 @@ void KeyDownInput(unsigned char key, int x, int y);
 
 void KeyUpInput(unsigned char key, int x, int y);
 
-void SpecialKeyInput(int key, int x, int y);
+//void SpecialKeyInput(int key, int x, int y);
 
 DWORD WINAPI DrawMain(LPVOID arg);
 
@@ -85,7 +85,7 @@ DWORD WINAPI DrawMain(LPVOID arg);
 #pragma pack(1)
 struct recvData {
 	float posX, posY;
-	float velX, velY;
+	//float velX, velY;
 	bool isVisible;
 }typedef recvData;
 #pragma pack()
@@ -93,11 +93,11 @@ struct recvData {
 #pragma pack(1)
 struct sendData {
 	float posX, posY;
-	float velX, velY;
+	//float velX, velY;
 	bool isVisible;
 }typedef sendData;
 #pragma pack()
-int sendkey;
+//int sendkey;
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	LPSTR lpCmdLine, int nCmdShow)
@@ -278,7 +278,7 @@ DWORD WINAPI ClientMain(LPVOID arg)
 			}
 			if (i != id)
 			{
-				g_ScnMgr->UpdateRecvData(recvedData[i].isVisible, recvedData[i].posX, recvedData[i].posY, i);
+				g_ScnMgr->UpdateRecvData(recvedData[i].posX, recvedData[i].posY, recvedData[i].isVisible, i);
 			}
 			else
 			{
@@ -288,23 +288,24 @@ DWORD WINAPI ClientMain(LPVOID arg)
 		SetEvent(hUpdateDataEvent);
 		WaitForSingleObject(hFinishedDrawAndUpdateEvent, 30);
 
-		float sendPosX, sendPosY, sendVelX, sendVelY;
+		float sendPosX, sendPosY;
+		//float sendVelX, sendVelY;
 		bool sendIsVisible;
-		g_ScnMgr->getSendData(&sendPosX, &sendPosY, &sendVelX, &sendVelY, &sendIsVisible);
+		g_ScnMgr->getSendData(&sendPosX, &sendPosY, &sendIsVisible);
 
 		tosendData.posX = sendPosX;
 		tosendData.posY = sendPosY;
-		tosendData.velX = sendVelX;
-		tosendData.velY = sendVelY;
+		//tosendData.velX = sendVelX;
+		//tosendData.velY = sendVelY;
 		tosendData.isVisible = sendIsVisible;
 		
 
 			//자기 위치 보내기
-			retval = send(sock, (char*)&tosendData, sizeof(sendData), 0);
-			if (retval == SOCKET_ERROR) {
-				err_display((char*)"send()");
-				break;
-			}
+		retval = send(sock, (char*)&tosendData, sizeof(sendData), 0);
+		if (retval == SOCKET_ERROR) {
+			err_display((char*)"send()");
+			break;
+		}
 		
 	}
 	//EnableWindow(hSendButton, TRUE); // 보내기 버튼 활성화
@@ -379,47 +380,51 @@ void MouseInput(int button, int state, int x, int y)
 
 void KeyDownInput(unsigned char key, int x, int y)
 {
-	float amount = 0.1f;
-	switch (key) {
-	case 'w':
-		W_KeyIsDown = TRUE;
-		break;
-	case 'a':
-		A_KeyIsDown = TRUE;
-		break;
-	case 's':
-		S_KeyIsDown = TRUE;
-		break;
-	case 'd':
-		D_KeyIsDown = TRUE;
-		break;
-	case 'r':
-		R_KeyIsDown = TRUE;
-		g_ScnMgr->joinClick('r');
-	default:
-		break;
+	if (key == 'w' || key == 'W')
+	{
+		W_KeyIsDown = true;
 	}
+	if (key == 's' || key == 'S')
+	{
+		S_KeyIsDown = true;
+	}
+	if (key == 'a' || key == 'A')
+	{
+		A_KeyIsDown = true;
+	}
+	if (key == 'd' || key == 'D')
+	{
+		D_KeyIsDown = true;
+	}
+	if (key == 'r' || key == 'R')
+	{
+		R_KeyIsDown = true;
+		g_ScnMgr->joinClick('r');
+	}
+
 }
 
 void KeyUpInput(unsigned char key, int x, int y) {
-	switch (key) {
-	case 'w':
-		W_KeyIsDown = FALSE;
-		break;
-	case 'a':
-		A_KeyIsDown = FALSE;
-		break;
-	case 's':
-		S_KeyIsDown = FALSE;
-		break;
-	case 'd':
-		D_KeyIsDown = FALSE;
-		break;
-	case 'r':
-		R_KeyIsDown = FALSE;
-	default:
-
-		break;
+	if (key == 'w' || key == 'W')
+	{
+		W_KeyIsDown = false;
+	}
+	if (key == 's' || key == 'S')
+	{
+		S_KeyIsDown = false;
+	}
+	if (key == 'a' || key == 'A')
+	{
+		A_KeyIsDown = false;
+	}
+	if (key == 'd' || key == 'D')
+	{
+		D_KeyIsDown = false;
+	}
+	if (key == 'r' || key == 'R')
+	{
+		R_KeyIsDown = false;
+		g_ScnMgr->joinClick('r');
 	}
 	RenderScene();
 }

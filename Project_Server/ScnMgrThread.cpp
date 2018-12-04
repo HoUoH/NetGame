@@ -31,17 +31,17 @@ void ScnMgr::InitObject()
 	  toSendData_InScnMgr[i].isVisible = false;
 	  toSendData_InScnMgr[i].posX = 0;
 	  toSendData_InScnMgr[i].posY = 0;
-	  toSendData_InScnMgr[i].velX = 0;
-	  toSendData_InScnMgr[i].velY = 0;
+	  //toSendData_InScnMgr[i].velX = 0;
+	  //toSendData_InScnMgr[i].velY = 0;
    }
 
    for (int i = 0; i < PlAYER_NUM; ++i) {
       objs[i] = new object();
-      objs[i]->SetAcc(0, 0);
-      objs[i]->SetForce(0, 0);
+      objs[i]->SetAcc(0.f, 0.f);
+      objs[i]->SetForce(0.f, 0.f);
       objs[i]->SetCoefFriction(1.f);
       objs[i]->SetMass(1.f);
-      objs[i]->SetVelocity(10, 10);
+      objs[i]->SetVelocity(0.f, 0.f);
       objs[i]->SetSize(PLAYER_SIZE, PLAYER_SIZE);
       objs[i]->SetKind(KIND_HERO);
       objs[i]->SetIsVisible(FALSE);
@@ -52,7 +52,7 @@ void ScnMgr::InitObject()
       objs[i] = new object();
       // 랜덤값으로 움직이게 만듦
       objs[i]->SetAcc(float(rand() % 100 - 50), float(rand() % 100 - 50));
-      objs[i]->SetForce(0, 0);
+      objs[i]->SetForce(0.f, 0.f);
       objs[i]->SetCoefFriction(0.5f);
       objs[i]->SetMass(1.f);
 	  objs[i]->SetVelocity(float(rand() % 6000 - 3000), float(rand() % 6000 - 3000));
@@ -113,7 +113,7 @@ sendData ScnMgr::ReturnSendData(int playerIndex)
 void ScnMgr::SetRecvedData(recvData* recvedData_InScnMgr, int playerIndex)	//recv 한 데이터를 서버에 덮어씌움
 {
 	objs[playerIndex]->SetLocation(recvedData_InScnMgr[playerIndex].posX, recvedData_InScnMgr[playerIndex].posY);
-	objs[playerIndex]->SetVelocity(recvedData_InScnMgr[playerIndex].velX, recvedData_InScnMgr[playerIndex].velY);
+	//objs[playerIndex]->SetVelocity(recvedData_InScnMgr[playerIndex].velX, recvedData_InScnMgr[playerIndex].velY);
 	objs[playerIndex]->SetIsVisible(recvedData_InScnMgr[playerIndex].isVisible);
 	// recvData의 specialKey값 읽어서 objs isVisible 초기화 해줘야하는 부분
 
@@ -204,7 +204,7 @@ void ScnMgr::ObjectCollision()
 
 void ScnMgr::FinalSendDataUpdate()
 {
-	float velX, velY;
+	//float velX, velY;
 	float posX, posY;
 
 	for (int i = 0; i < MAX_OBJECTS; i++) {
@@ -217,12 +217,12 @@ void ScnMgr::FinalSendDataUpdate()
 		{
 			toSendData_InScnMgr[i].isVisible = FALSE;
 		}*/
-		objs[i]->GetVelocity(&velX, &velY);
+		//objs[i]->GetVelocity(&velX, &velY);
 		objs[i]->GetLocation(&posX, &posY);
 		toSendData_InScnMgr[i].posX = posX;
 		toSendData_InScnMgr[i].posY = posY;
-		toSendData_InScnMgr[i].velX = velX;
-		toSendData_InScnMgr[i].velY = velY;
+		//toSendData_InScnMgr[i].velX = velX;
+		//toSendData_InScnMgr[i].velY = velY;
 		toSendData_InScnMgr[i].isVisible = objs[i]->GetIsVisible();
 	}
 }

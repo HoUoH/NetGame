@@ -22,7 +22,7 @@
 #pragma pack(1)
 struct recvData {
 	float posX, posY;
-	float velX, velY;
+	//float velX, velY;
 	bool isVisible;
 }typedef recvData;
 #pragma pack()
@@ -30,7 +30,7 @@ struct recvData {
 #pragma pack(1)
 struct sendData {
 	float posX, posY;
-	float velX, velY;
+	//float velX, velY;
 	bool isVisible;
 }typedef sendData;
 #pragma pack()
