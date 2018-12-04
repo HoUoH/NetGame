@@ -424,7 +424,7 @@ void KeyUpInput(unsigned char key, int x, int y) {
 	if (key == 'r' || key == 'R')
 	{
 		R_KeyIsDown = false;
-		g_ScnMgr->joinClick('r');
+		//g_ScnMgr->joinClick('r');
 	}
 	RenderScene();
 }

@@ -13,7 +13,7 @@ bool CollisionCheck(const float& oA_rad, const float& oA_x, const float& oA_y, f
 	float distBtwPoints = sqrt((posx - oA_x)*(posx - oA_x) + (posy - oA_y)*(posy - oA_y));
 
 
-	if (colLenLimit <= distBtwPoints) {
+	if (colLenLimit - distBtwPoints < FLT_EPSILON) {		// colLenLimit - distBtwPoints < FLT_EPSILON
 		//printf("¾È°ãÃÄ\n");
 		return false;
 	}
@@ -31,7 +31,7 @@ bool CollisionCheck(const float& oA_rad, const float& oA_x, const float& oA_y,
 	float distBtwPoints = sqrt((oA_x - oB_x)*(oA_x - oB_x) + (oA_y - oB_y)*(oA_y - oB_y));
 
 
-	if (colLenLimit <= distBtwPoints)
+	if (colLenLimit - distBtwPoints < FLT_EPSILON)
 		return false;
 
 	return true;

@@ -8,9 +8,9 @@ float minVelocity = -500.f;
 
 object::object()
 {
-	posX = 0;	posY = 0;
-	sizeX = 0;	sizeY = 0;
-	accX = 0;	accY = 0;
+	posX = 0.f;	posY = 0.f;
+	sizeX = 0.f;	sizeY = 0.f;
+	accX = 0.f;	accY = 0.f;
 
 }
 
@@ -23,7 +23,7 @@ object::~object()
 void object::Update(float elapsed_time_in_sec)
 {
 	
-	float gz = mass * 9.8;
+	float gz = mass * 9.8f;
 	float friction = coefFriction * gz;
 
 	
@@ -252,6 +252,6 @@ void object::BreakMovement(bool W_KeyIsDown, bool S_KeyIsDown, bool D_KeyIsDown,
 }
 
 void object::PingpongBall() {
-	velX = rand() % 6000 - 3000;
-	velY = rand() % 6000 - 3000;
+	velX = float(rand() % 6000 - 3000);
+	velY = float(rand() % 6000 - 3000);
 }

@@ -21,7 +21,7 @@ bool CollisionCheck(object * oA, object * oB)
 
 
 	float colLenLimit = oA_rad / 2 + oB_rad / 2;
-	float distBtwPoints = sqrt((x2 - x1)*(x2 - x1) + (y2 - y1)*(y2 - y1));
+	float distBtwPoints = float(sqrt((x2 - x1)*(x2 - x1) + (y2 - y1)*(y2 - y1)));
 
 
 	if (colLenLimit <= distBtwPoints)
@@ -36,13 +36,13 @@ bool CollisionCheck(object *oA, float posx, float posy)
 	float oA_rad;
 	float Secondsize;
 	float x1, y1;
-	float x2, y2;
+	//float x2, y2;
 	oA->GetSize(&oA_rad, &Secondsize);
 	oA->GetLocation(&x1, &y1);
 
 
 	float colLenLimit = oA_rad * 2 + PLAYER_SIZE * 2;
-	float distBtwPoints = sqrt((posx - x1)*(posx - x1) + (posy - y1)*(posy - y1));
+	float distBtwPoints = float(sqrt((posx - x1)*(posx - x1) + (posy - y1)*(posy - y1)));
 
 
 	if (colLenLimit <= distBtwPoints) {
@@ -78,19 +78,19 @@ void CollisionReaction(class object* oA, class object* oB)
 
 void WallCollision(class object* obj)
 {
-	float posX, posY = 0;
-	float rad, height = 0;
+	float posX, posY = 0.f;
+	float rad, height = 0.f;
 	obj->GetLocation(&posX, &posY);
 	obj->GetSize(&rad, &height);
 
-	if (posX - rad/2 <= -WINDOW_SIZEX/2||posX+rad/2>= WINDOW_SIZEX / 2) {
+	if ( (posX - rad/2) - (-WINDOW_SIZEX / 2) < FLT_EPSILON || (posX+rad/2) - (WINDOW_SIZEX / 2) > FLT_EPSILON ) {
 		float vx, vy;
 		obj->GetPreLocation(&posX, &posY);
 		obj->SetLocation(posX, posY);
 		obj->GetVelocity(&vx, &vy);
 		obj->SetVelocity(-vx*2.f, vy);
 	}
-	if (posY - rad/2 <= -WINDOW_SIZEY / 2 || posY + rad/2 >= WINDOW_SIZEY / 2) {
+	if ((posY - rad/2) - (-WINDOW_SIZEY / 2) < FLT_EPSILON || (posY + rad/2) -  (WINDOW_SIZEY / 2) > FLT_EPSILON ) {
 		float vx, vy;
 		obj->GetPreLocation(&posX, &posY);
 		obj->SetLocation(posX, posY);

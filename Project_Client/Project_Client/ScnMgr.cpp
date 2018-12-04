@@ -213,9 +213,9 @@ void ScnMgr::joinClick(char key) {
 	if (!alive && key == 'r') {
 		posX = float(rand() % (WINDOW_SIZEX - 100) - 250);
 		posY = float(rand() % (WINDOW_SIZEX - 100) - 250);
-		objs[MyID]->SetAcc(0, 0);
-		objs[MyID]->SetForce(0, 0);
-		objs[MyID]->SetVelocity(0, 0);
+		objs[MyID]->SetAcc(0.f, 0.f);
+		objs[MyID]->SetForce(0.f, 0.f);
+		objs[MyID]->SetVelocity(0.f, 0.f);
 		objs[MyID]->SetLocation(posX, posY);
 		Invincible_time = 0;
 		objs[MyID]->SetIsVisible(true);
