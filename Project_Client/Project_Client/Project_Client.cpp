@@ -269,7 +269,8 @@ DWORD WINAPI ClientMain(LPVOID arg)
 	sendData tosendData;
 	while (1) {
 
-		for (int i = 0; i < MAX_OBJECTS; i++) {
+		for (int i = 0; i < MAX_OBJECTS; i++) 
+		{
 			//전체 데이터 받기
 			retval = recvn(sock, (char*)&recvedData[i], sizeof(recvData), 0);
 			if (retval == SOCKET_ERROR) {
@@ -279,10 +280,6 @@ DWORD WINAPI ClientMain(LPVOID arg)
 			if (i != id)
 			{
 				g_ScnMgr->UpdateRecvData(recvedData[i].posX, recvedData[i].posY, recvedData[i].isVisible, i);
-			}
-			else
-			{
-				g_ScnMgr->SetPlayerCollision(recvedData[i].isVisible);
 			}
 		}
 		SetEvent(hUpdateDataEvent);
@@ -335,8 +332,9 @@ void RenderScene(void)	//1초에 30번 출력되어야 하는 함수
 
 	float eTime = elapsed_time / 1000.f;//convert to second
 
-	if (eTime < 0.015)
-		return;
+	//프레임 제한 없엠
+	//if (eTime < 0.015)
+	//	return;
 
 	prev_render_time = current_time;
 
@@ -351,10 +349,6 @@ void RenderScene(void)	//1초에 30번 출력되어야 하는 함수
 		forceY -= amount;
 	if (D_KeyIsDown)
 		forceX += amount;
-	if (R_KeyIsDown)
-	{
-		g_ScnMgr->joinClick('r');
-	}
 	
 
 	g_ScnMgr->ApplyForce(forceX, forceY, eTime);
@@ -402,9 +396,8 @@ void KeyDownInput(unsigned char key, int x, int y)
 	}
 	if (key == 'r' || key == 'R')
 	{
-		R_KeyIsDown = true;
+		g_ScnMgr->joinClick('r');
 	}
-
 }
 
 void KeyUpInput(unsigned char key, int x, int y) {
@@ -423,10 +416,6 @@ void KeyUpInput(unsigned char key, int x, int y) {
 	if (key == 'd' || key == 'D')
 	{
 		D_KeyIsDown = false;
-	}
-	if (key == 'r' || key == 'R')
-	{
-		R_KeyIsDown = false;
 	}
 	RenderScene();
 }

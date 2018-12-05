@@ -138,7 +138,6 @@ void ScnMgr::Update(float elapsed_time_in_sec)
 	{
 		Invincible_time += elapsed_time_in_sec;
 	}
-	//printf("사이즈 %d\n", sizeof(objs));
 }
 
 
@@ -177,22 +176,12 @@ void ScnMgr::ObjectCollision()
 		{
 			for (int j = PlAYER_NUM; j < MAX_OBJECTS; ++j) 
 			{
-				// 11.28 익진
-				// 이부분 넣으면 캐릭터끼리 끼어서 못움직이는데
-				// 캐릭터 끼리는 충돌체크 하지 않는 방법도 생각해보자
-
 				if (objs[j]->GetIsVisible()) 
 				{
 					if (CollisionCheck(objs[MyID], objs[j])) 
 					{
-						//float posX, posY = 0;
-						//objs[MyID]->GetPreLocation(&posX, &posY);
-						//objs[MyID]->SetLocation(posX, posY);
-						//objs[j]->GetPreLocation(&posX, &posY);
-						//objs[j]->SetLocation(posX, posY);
 						// 충돌에 의한 반응
 						CollisionReaction(objs[MyID], objs[j]);
-
 					}
 				}
 			}
@@ -211,7 +200,6 @@ void ScnMgr::joinClick(char key) {
 
 	float posX = 0, posY = 0;
 
-	//if (!alive && key == 'r') {
 	posX = float(rand() % (WINDOW_SIZEX - 100) - 250);
 	posY = float(rand() % (WINDOW_SIZEX - 100) - 250);
 	objs[MyID]->SetAcc(0.f, 0.f);
@@ -220,23 +208,6 @@ void ScnMgr::joinClick(char key) {
 	objs[MyID]->SetLocation(posX, posY);
 	Invincible_time = 0;
 	objs[MyID]->SetIsVisible(true);
-	//}
-	//죽었는데 다시시작 키(F1)를 눌렀을 시
-	//버그 있는거 같은데 이유를 모르겠네
-	/*if (click_join(key, alive)) {
-		bool check = true;
-		float posX = 0, posY = 0;
-		//다시 시작 위치를 잡아줘야 한다.
-		//다시 시작 위치를 잡아주는 컬리전 함수
-		posX = rand() % (WINDOW_SIZEX - 100) - 250;
-		posY = rand() % (WINDOW_SIZEX - 100) - 250;
-		objs[MyID]->SetAcc(0, 0);
-		objs[MyID]->SetForce(0, 0);
-		objs[MyID]->SetVelocity(0, 0);
-		objs[MyID]->SetLocation(posX, posY);
-		Invincible_time = 0;
-		objs[MyID]->SetIsVisible(true);
-	}*/
 }
 
 void ScnMgr::RenderJoin() {
@@ -266,9 +237,3 @@ void ScnMgr::getSendData(float * posX, float * posY, bool * isVisible)
 	//objs[MyID]->GetVelocity(velX, velY);
 	*isVisible = objs[MyID]->GetIsVisible();
 }
-
-void ScnMgr::SetPlayerCollision(bool isVisible) 
-{
-	objs[MyID]->SetIsVisible(isVisible);
-}
-
