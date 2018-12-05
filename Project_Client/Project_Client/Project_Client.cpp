@@ -351,6 +351,10 @@ void RenderScene(void)	//1초에 30번 출력되어야 하는 함수
 		forceY -= amount;
 	if (D_KeyIsDown)
 		forceX += amount;
+	if (R_KeyIsDown)
+	{
+		g_ScnMgr->joinClick('r');
+	}
 	
 
 	g_ScnMgr->ApplyForce(forceX, forceY, eTime);
@@ -399,7 +403,6 @@ void KeyDownInput(unsigned char key, int x, int y)
 	if (key == 'r' || key == 'R')
 	{
 		R_KeyIsDown = true;
-		g_ScnMgr->joinClick('r');
 	}
 
 }
@@ -424,7 +427,6 @@ void KeyUpInput(unsigned char key, int x, int y) {
 	if (key == 'r' || key == 'R')
 	{
 		R_KeyIsDown = false;
-		//g_ScnMgr->joinClick('r');
 	}
 	RenderScene();
 }
