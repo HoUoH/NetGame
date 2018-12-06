@@ -283,7 +283,7 @@ DWORD WINAPI ClientMain(LPVOID arg)
 			}
 		}
 		SetEvent(hUpdateDataEvent);
-		WaitForSingleObject(hFinishedDrawAndUpdateEvent, 30);
+		WaitForSingleObject(hFinishedDrawAndUpdateEvent, INFINITE);
 
 		float sendPosX, sendPosY;
 		//float sendVelX, sendVelY;
@@ -333,8 +333,8 @@ void RenderScene(void)	//1초에 30번 출력되어야 하는 함수
 	float eTime = elapsed_time / 1000.f;//convert to second
 
 	//프레임 제한 없엠
-	//if (eTime < 0.015)
-	//	return;
+	if (eTime < 0.015)
+		return;
 
 	prev_render_time = current_time;
 
@@ -366,7 +366,7 @@ void RenderScene(void)	//1초에 30번 출력되어야 하는 함수
 
 void Idle(void)
 {
-	WaitForSingleObject(hUpdateDataEvent, 30);
+	WaitForSingleObject(hUpdateDataEvent, INFINITE);
 	RenderScene();
 	SetEvent(hFinishedDrawAndUpdateEvent);
 }
@@ -398,6 +398,8 @@ void KeyDownInput(unsigned char key, int x, int y)
 	{
 		g_ScnMgr->joinClick('r');
 	}
+	RenderScene();
+
 }
 
 void KeyUpInput(unsigned char key, int x, int y) {

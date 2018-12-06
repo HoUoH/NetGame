@@ -224,6 +224,7 @@ void ScnMgr::FinalSendDataUpdate()
 		//toSendData_InScnMgr[i].velX = velX;
 		//toSendData_InScnMgr[i].velY = velY;
 		toSendData_InScnMgr[i].isVisible = objs[i]->GetIsVisible();
+		
 	}
 }
 
