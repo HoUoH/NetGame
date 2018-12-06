@@ -70,34 +70,32 @@ void RenderScene(void);
 
 void Idle(void);
 
-//키 input 관련
-void MouseInput(int button, int state, int x, int y);
-
 void KeyDownInput(unsigned char key, int x, int y);
 
 void KeyUpInput(unsigned char key, int x, int y);
 
-//void SpecialKeyInput(int key, int x, int y);
-
 DWORD WINAPI DrawMain(LPVOID arg);
 
+#pragma pack(1)
+struct recvData_Object {
+	float posX, posY;
+	bool isVisible;
+
+}typedef recvData_Object;
+#pragma pack()
 
 #pragma pack(1)
 struct recvData {
-	float posX, posY;
-	//float velX, velY;
-	bool isVisible;
+	recvData_Object revObj[MAX_OBJECTS];
 }typedef recvData;
 #pragma pack()
 
 #pragma pack(1)
 struct sendData {
 	float posX, posY;
-	//float velX, velY;
 	bool isVisible;
 }typedef sendData;
 #pragma pack()
-//int sendkey;
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	LPSTR lpCmdLine, int nCmdShow)
@@ -261,39 +259,38 @@ DWORD WINAPI ClientMain(LPVOID arg)
 	
 	hUpdateDataEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
 	hFinishedDrawAndUpdateEvent = CreateEvent(NULL, FALSE, TRUE, NULL);
-	//CreateThread(NULL, 0, UpdateThread, NULL, 0, NULL);
 
 	retval = recvn(sock, (char*)&id, sizeof(int), 0);
 	g_ScnMgr->SetMyID(id);
-	recvData recvedData[MAX_OBJECTS];
+	recvData recvedData;
 	sendData tosendData;
 	while (1) {
 
-		for (int i = 0; i < MAX_OBJECTS; i++) 
+		//전체 데이터 받기
+		retval = recvn(sock, (char*)&recvedData, sizeof(recvData), 0);
+		if (retval == SOCKET_ERROR) {
+			err_display((char*)"recv()");
+			break;
+		}
+		
+		for(int i = 0; i< MAX_OBJECTS; ++i)
 		{
-			//전체 데이터 받기
-			retval = recvn(sock, (char*)&recvedData[i], sizeof(recvData), 0);
-			if (retval == SOCKET_ERROR) {
-				err_display((char*)"recv()");
-				break;
-			}
 			if (i != id)
 			{
-				g_ScnMgr->UpdateRecvData(recvedData[i].posX, recvedData[i].posY, recvedData[i].isVisible, i);
+				g_ScnMgr->UpdateRecvData(recvedData.revObj[i].posX, recvedData.revObj[i].posY, recvedData.revObj[i].isVisible, i);
 			}
 		}
+
+
 		SetEvent(hUpdateDataEvent);
 		WaitForSingleObject(hFinishedDrawAndUpdateEvent, INFINITE);
 
 		float sendPosX, sendPosY;
-		//float sendVelX, sendVelY;
 		bool sendIsVisible;
 		g_ScnMgr->getSendData(&sendPosX, &sendPosY, &sendIsVisible);
 
 		tosendData.posX = sendPosX;
 		tosendData.posY = sendPosY;
-		//tosendData.velX = sendVelX;
-		//tosendData.velY = sendVelY;
 		tosendData.isVisible = sendIsVisible;
 		
 
@@ -333,7 +330,7 @@ void RenderScene(void)	//1초에 30번 출력되어야 하는 함수
 	float eTime = elapsed_time / 1000.f;//convert to second
 
 	//프레임 제한 없엠
-	if (eTime < 0.015)
+	if (eTime < 0.03)
 		return;
 
 	prev_render_time = current_time;
@@ -371,13 +368,9 @@ void Idle(void)
 	SetEvent(hFinishedDrawAndUpdateEvent);
 }
 
-void MouseInput(int button, int state, int x, int y)
-{
-	RenderScene();
-}
-
 void KeyDownInput(unsigned char key, int x, int y)
 {
+	WaitForSingleObject(hUpdateDataEvent, INFINITE);
 	if (key == 'w' || key == 'W')
 	{
 		W_KeyIsDown = true;
@@ -398,11 +391,15 @@ void KeyDownInput(unsigned char key, int x, int y)
 	{
 		g_ScnMgr->joinClick('r');
 	}
+
 	RenderScene();
 
+	SetEvent(hFinishedDrawAndUpdateEvent);
 }
 
 void KeyUpInput(unsigned char key, int x, int y) {
+	WaitForSingleObject(hUpdateDataEvent, INFINITE);
+
 	if (key == 'w' || key == 'W')
 	{
 		W_KeyIsDown = false;
@@ -419,19 +416,11 @@ void KeyUpInput(unsigned char key, int x, int y) {
 	{
 		D_KeyIsDown = false;
 	}
-	RenderScene();
-}
 
-/*
-void SpecialKeyInput(int key, int x, int y)
-{
-	//시작 키를 눌렀을 경우 (F1키)
-	if (key == 1) {
-		sendkey = 1;
-		g_ScnMgr->joinClick(sendkey);
-	}
 	RenderScene();
-}*/
+	
+	SetEvent(hFinishedDrawAndUpdateEvent);
+}
 
 DWORD WINAPI DrawMain(LPVOID arg) {
 	
@@ -453,9 +442,7 @@ DWORD WINAPI DrawMain(LPVOID arg) {
 	glutIdleFunc(Idle);
 	glutKeyboardFunc(KeyDownInput);
 	glutKeyboardUpFunc(KeyUpInput);
-	//glutSpecialFunc(SpecialKeyInput);
 	glutSetKeyRepeat(GLUT_KEY_REPEAT_OFF);
-	glutMouseFunc(MouseInput);
 
 	g_ScnMgr = new ScnMgr();
 	SetEvent(drawEvent);

@@ -200,6 +200,8 @@ void ScnMgr::joinClick(char key) {
 
 	float posX = 0, posY = 0;
 
+	srand(MyID);
+
 	posX = float(rand() % (WINDOW_SIZEX - 100) - 250);
 	posY = float(rand() % (WINDOW_SIZEX - 100) - 250);
 	objs[MyID]->SetAcc(0.f, 0.f);

@@ -5,7 +5,7 @@
 
 //공이 한쪽으로 모이는걸 방지하기 위해 쓴 인자
 int FrameCount = 0;
-sendData toSendData_InScnMgr[MAX_OBJECTS];
+sendData_Object toSendData_InScnMgr[MAX_OBJECTS];
 int seq = 0;
 
 ScnMgr::ScnMgr()
@@ -31,8 +31,6 @@ void ScnMgr::InitObject()
 	  toSendData_InScnMgr[i].isVisible = false;
 	  toSendData_InScnMgr[i].posX = 0;
 	  toSendData_InScnMgr[i].posY = 0;
-	  //toSendData_InScnMgr[i].velX = 0;
-	  //toSendData_InScnMgr[i].velY = 0;
    }
 
    for (int i = 0; i < PlAYER_NUM; ++i) {
@@ -105,7 +103,7 @@ void ScnMgr::Update(float elapsed_time_in_sec)
 }
 
 // ServerWinAPI.cpp의 ScnMgrThread에 업데이트된 sendData를 전달해주기 위한 함수
-sendData ScnMgr::ReturnSendData(int playerIndex)
+sendData_Object ScnMgr::ReturnSendData(int playerIndex)
 {
 	return toSendData_InScnMgr[playerIndex];
 }
@@ -125,79 +123,32 @@ void ScnMgr::ObjectCollision()
 	float posX, posY;
 	float rad, height;
 	float vx, vy;
-	//float obj1_posX, obj1_posY, obj1_rad;
-	//float obj2_posX, obj2_posY, obj2_rad;
-	//float Invincible_time;
 	char WallCol;
 
-   for (int i = 0; i < MAX_OBJECTS; ++i) 
+   for (int i = PlAYER_NUM; i < MAX_OBJECTS; ++i) 
    {
-      //if (objs[i]->GetIsVisible()) 
-	  //{
 
-		 //벽 충돌
-		 if (i >= PlAYER_NUM)
-		  {
-			  objs[i]->GetLocation(&posX, &posY);
-			  objs[i]->GetSize(&rad, &height);
-			  WallCol = WallCollision(posX, posY, rad, height);
-			  switch (WallCol)
-			  {
-			  case 'r':
-				  objs[i]->GetPreLocation(&posX, &posY);
-				  objs[i]->SetLocation(posX, posY);
-				  objs[i]->GetVelocity(&vx, &vy);
-				  objs[i]->SetVelocity(-vx * 2.f, vy);
-				  break;
-			  case 'u':
-				  objs[i]->GetPreLocation(&posX, &posY);
-				  objs[i]->SetLocation(posX, posY);
-				  objs[i]->GetVelocity(&vx, &vy);
-				  objs[i]->SetVelocity(vx, -vy * 2.f);
-				  break;
-			  default:
-				  break;
-			  }
-		  }
-		 
-		 // 안먹으니 보류
-		 /*
-		 //플레이어 무적 시간 할당
-		 if (i < PlAYER_NUM)
-		 {
-			 objs[i]->GetInvincible_time(&Invincible_time);
-			 if (Invincible_time < DEATH_START_TIME)
-			 {
-				 continue;
-			 }
-		 }
-		 */
+		objs[i]->GetLocation(&posX, &posY);
+		objs[i]->GetSize(&rad, &height);
+		WallCol = WallCollision(posX, posY, rad, height);
 
-		 /*
-         for (int j = i+1; j < MAX_OBJECTS; ++j) 
-		 {
-			 
-			 // 플레이어끼린 충돌하지 않는다.
-			 if (j < PlAYER_NUM)
-			 {
-				 continue;
-			 }
-
-			 if (objs[j]->GetIsVisible()) 
-			 {
-			 	 objs[i]->GetLocation(&obj1_posX, &obj1_posY);
-			 	 objs[i]->GetSize(&obj1_rad, &obj1_rad);
-			 	 objs[j]->GetLocation(&obj2_posX, &obj2_posY);
-			 	 objs[j]->GetSize(&obj2_rad, &obj2_rad);
-			 	 if (CollisionCheck(obj1_rad, obj1_posX, obj1_posY,
-			 		 obj2_rad, obj2_posX, obj2_posY)) {
-			 		  // 충돌에 의한 반응
-			 		 CollisionReaction(objs[i], objs[j]);
-			 	 }
-			 }
-         }
-		 */
-      //}
+		switch (WallCol)
+		{
+		case 'r':
+		  objs[i]->GetPreLocation(&posX, &posY);
+		  objs[i]->SetLocation(posX, posY);
+		  objs[i]->GetVelocity(&vx, &vy);
+		  objs[i]->SetVelocity(-vx * 2.f, vy);
+		  break;
+		case 'u':
+		  objs[i]->GetPreLocation(&posX, &posY);
+		  objs[i]->SetLocation(posX, posY);
+		  objs[i]->GetVelocity(&vx, &vy);
+		  objs[i]->SetVelocity(vx, -vy * 2.f);
+		  break;
+		default:
+		  break;
+		}
    }
 
 }
@@ -208,21 +159,9 @@ void ScnMgr::FinalSendDataUpdate()
 	float posX, posY;
 
 	for (int i = 0; i < MAX_OBJECTS; i++) {
-		// ServerWinAPI.cpp의 ScnMgrThread에 업데이트된 sendData를 전달해주기 위해서
-		/*if (objs[i]->GetIsVisible())
-		{
-			toSendData_InScnMgr[i].isVisible = TRUE;
-		}
-		else
-		{
-			toSendData_InScnMgr[i].isVisible = FALSE;
-		}*/
-		//objs[i]->GetVelocity(&velX, &velY);
 		objs[i]->GetLocation(&posX, &posY);
 		toSendData_InScnMgr[i].posX = posX;
 		toSendData_InScnMgr[i].posY = posY;
-		//toSendData_InScnMgr[i].velX = velX;
-		//toSendData_InScnMgr[i].velY = velY;
 		toSendData_InScnMgr[i].isVisible = objs[i]->GetIsVisible();
 		
 	}

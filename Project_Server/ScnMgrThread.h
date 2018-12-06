@@ -9,7 +9,7 @@ public:
 	void InitObject();
 	void RenderScene();
 	void Update(float elapsed_time_in_sec);
-	sendData ReturnSendData(int playerIndex);
+	sendData_Object ReturnSendData(int playerIndex);
 	void SetRecvedData(recvData* recvedData_InScnMgr, int playerIndex);
 	void ObjectCollision();
 	void FinalSendDataUpdate();

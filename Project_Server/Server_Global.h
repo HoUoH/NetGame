@@ -22,15 +22,20 @@
 #pragma pack(1)
 struct recvData {
 	float posX, posY;
-	//float velX, velY;
 	bool isVisible;
 }typedef recvData;
 #pragma pack()
 
 #pragma pack(1)
-struct sendData {
+struct sendData_Object {
 	float posX, posY;
-	//float velX, velY;
 	bool isVisible;
+}typedef sendData_Object;
+#pragma pack()
+
+#pragma pack(1)
+struct sendData {
+	sendData_Object senObj[MAX_OBJECTS];
 }typedef sendData;
 #pragma pack()
+
