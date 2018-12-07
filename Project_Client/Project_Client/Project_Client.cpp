@@ -112,7 +112,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
 	CloseHandle(hReadEvent);
 	CloseHandle(hWriteEvent);
+	// closesocket()
+	closesocket(sock);
 
+	// 윈속 종료
+	WSACleanup();
 	return 0;
 }
 
@@ -264,6 +268,15 @@ DWORD WINAPI ClientMain(LPVOID arg)
 	g_ScnMgr->SetMyID(id);
 	recvData recvedData;
 	sendData tosendData;
+
+	for (int i = 0; i < MAX_OBJECTS; i++) {
+		recvedData.revObj[i].isVisible = FALSE;
+		recvedData.revObj[i].posX = 0.0f;
+		recvedData.revObj[i].posY = 0.0f;
+	}
+	tosendData.isVisible = FALSE;
+	tosendData.posX = 0.0f;
+	tosendData.posY = 0.0f;
 	while (1) {
 
 		//전체 데이터 받기
@@ -448,6 +461,7 @@ DWORD WINAPI DrawMain(LPVOID arg) {
 	SetEvent(drawEvent);
 	glutMainLoop();
 	
+
 	delete g_ScnMgr;
 
 	return 0;
