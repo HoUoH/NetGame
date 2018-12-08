@@ -30,6 +30,12 @@ private:
 	GLuint Ball_Texture;
 	GLuint Join_Texture;
 	GLuint Background_Texture;
+	GLuint Txt_Texture;
+	GLuint base;
 	int MyID;
+	float GameTime;
+	float Invincible_time;
+	float temp;
+	float Invincible_limit;
 };
 

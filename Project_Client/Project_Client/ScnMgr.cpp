@@ -1,11 +1,12 @@
+#define _CRT_SECURE_NO_WARNINGS
 #include "stdafx.h"
 #include "ScnMgr.h"
 #include "Collision.h"
 #include "Join.h"
+#include "Dependencies\glew.h"
+#include "Dependencies\freeglut.h"
 
-//공이 한쪽으로 모이는걸 방지하기 위해 쓴 인자
-int FrameCount = 0;
-float Invincible_time;
+
 
 ScnMgr::ScnMgr()
 {
@@ -35,14 +36,19 @@ ScnMgr::ScnMgr()
 	Character_Texture[2] = m_Renderer->CreatePngTexture((char*)"./Textures/Player_3.png");
 	Character_Texture[3] = m_Renderer->CreatePngTexture((char*)"./Textures/Player_4.png");
 	//플레이어 4명만 함 나머진 보류
-	//Character_Texture[4] = m_Renderer->CreatePngTexture((char*)"./Textures/Player_5.png");
-	//Character_Texture[5] = m_Renderer->CreatePngTexture((char*)"./Textures/Player_6.png");
-	//Character_Texture[6] = m_Renderer->CreatePngTexture((char*)"./Textures/Player_7.png");
-	//Character_Texture[7] = m_Renderer->CreatePngTexture((char*)"./Textures/Player_8.png");
+	Character_Texture[4] = m_Renderer->CreatePngTexture((char*)"./Textures/Player_5.png");
+	Character_Texture[5] = m_Renderer->CreatePngTexture((char*)"./Textures/Player_6.png");
+	Character_Texture[6] = m_Renderer->CreatePngTexture((char*)"./Textures/Player_7.png");
+	Character_Texture[7] = m_Renderer->CreatePngTexture((char*)"./Textures/Player_8.png");
 	Ball_Texture = m_Renderer->CreatePngTexture((char*)"./Textures/PocketBall.png");
 	Join_Texture = m_Renderer->CreatePngTexture((char*)"./Textures/JOIN.png");
 	Background_Texture = m_Renderer->CreatePngTexture((char*)"./Textures/Background2.png");
+	Txt_Texture = m_Renderer->CreatePngTexture((char*)"./Textures/TextTexture.png");
 
+	GameTime = 0.f;
+	Invincible_time = 0.f;
+	temp = 10.f;
+	Invincible_limit = 1;
 
 	for (int i = 0; i < PlAYER_NUM; ++i) {
 		objs[i] = new object();
@@ -50,7 +56,6 @@ ScnMgr::ScnMgr()
 		objs[i]->SetForce(0, 0);
 		objs[i]->SetCoefFriction(1.f);
 		objs[i]->SetMass(1.f);
-		//objs[i]->SetVelocity(10, 10);
 		objs[i]->SetVelocity(0, 0);
 		objs[i]->SetSize(PLAYER_SIZE, PLAYER_SIZE);
 		objs[i]->SetKind(KIND_HERO);
@@ -60,38 +65,18 @@ ScnMgr::ScnMgr()
 
 	for (int i = PlAYER_NUM; i < MAX_OBJECTS; ++i) {
 		objs[i] = new object();
-		// 랜덤값으로 움직이게 만듦
-		//objs[i]->SetAcc(rand() % 100 - 50, rand() % 100 - 50);
 		objs[i]->SetAcc(0, 0);
 		objs[i]->SetForce(0, 0);
 		objs[i]->SetCoefFriction(0.5f);
 		objs[i]->SetMass(1.f);
-		//objs[i]->SetVelocity(rand() % 6000 - 3000, rand() % 6000 - 3000);
 		objs[i]->SetVelocity(0, 0);
 		objs[i]->SetSize(BALL_SIZE, BALL_SIZE);
 		objs[i]->SetKind(KIND_BALL);
 		objs[i]->SetIsVisible(false);
 	}
 
-	//for (int i = 0; i < MAX_OBJECTS; ++i) {
-	//	bool check = true;
-	//	objs[i]->SetLocation(rand() % (WINDOW_SIZEX - 100) - 250, rand() % (WINDOW_SIZEY - 100) - 250);
-	//	for (int j = i+1; j < MAX_OBJECTS; ++j) {
-	//		if (CollisionCheck(objs[i], objs[j])) {
-	//			check = false;
-	//			break;
-	//		}
-	//		
-	//	}
-	//	if (check == false) {
-	//		i--;
-	//		continue;
-	//	}
-	//}
-
-
 }
-int seq = 0;
+
 void ScnMgr::RenderScene()	//1초에 최소 60번 이상 출력되어야 하는 함수
 {
 	
@@ -105,9 +90,18 @@ void ScnMgr::RenderScene()	//1초에 최소 60번 이상 출력되어야 하는 함수
 	//캐릭터 그리기
 	for (int i = 0; i < PlAYER_NUM; ++i) {
 		if (objs[i]->GetIsVisible()) {
+
 			objs[i]->GetLocation(&x, &y);
 			objs[i]->GetSize(&width, &height);
-			m_Renderer->DrawTextureRect(x, y, 0, width, height, 1, 1, 1, 1, Character_Texture[i]);
+
+			if (i == MyID && Invincible_time < Invincible_limit)
+			{
+				m_Renderer->DrawTextureRect(x, y, 0, width, height, 0.2, 0, 0, 1, Character_Texture[i]);
+			}			
+			else
+			{
+				m_Renderer->DrawTextureRect(x, y, 0, width, height, 1, 1, 1, 1, Character_Texture[i]);
+			}
 		}
 	}
 
@@ -120,6 +114,18 @@ void ScnMgr::RenderScene()	//1초에 최소 60번 이상 출력되어야 하는 함수
 		}
 	}
 
+	m_Renderer->DrawTextureRect(100, 250, 0, 100, 100, 0, 0, 0, 1, Txt_Texture);
+	
+	char s1[20];
+	sprintf(s1, "Survival Time : %d", (int)GameTime);
+	glRasterPos2f(0, 0);
+	
+
+	for (int i = 0; i < strlen(s1); ++i)
+	{
+		glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, s1[i]);
+	}
+
 	RenderJoin();
 
 }
@@ -129,14 +135,16 @@ ScnMgr::~ScnMgr()
 
 }
 
-float temp = 10.f;
-
 void ScnMgr::Update(float elapsed_time_in_sec)
 {
 	objs[MyID]->Update(elapsed_time_in_sec);
 	if (objs[MyID]->GetIsVisible())
 	{
-		Invincible_time += elapsed_time_in_sec;
+		//Invincible_time += elapsed_time_in_sec;
+
+		//디버깅용 무적시간
+		Invincible_time += 0;
+		GameTime += elapsed_time_in_sec;
 	}
 }
 
@@ -172,7 +180,7 @@ void ScnMgr::ObjectCollision()
 	{
 		WallCollision(objs[MyID]);
 
-		if (Invincible_time > 3) 
+		if (Invincible_time > Invincible_limit)
 		{
 			for (int j = PlAYER_NUM; j < MAX_OBJECTS; ++j) 
 			{
@@ -200,7 +208,7 @@ void ScnMgr::joinClick(char key) {
 
 	float posX = 0, posY = 0;
 
-	srand(MyID);
+	srand(MyID*100);
 
 	posX = float(rand() % (WINDOW_SIZEX - 100) - 250);
 	posY = float(rand() % (WINDOW_SIZEX - 100) - 250);
@@ -210,6 +218,7 @@ void ScnMgr::joinClick(char key) {
 	objs[MyID]->SetLocation(posX, posY);
 	Invincible_time = 0;
 	objs[MyID]->SetIsVisible(true);
+	GameTime = 0.f;
 }
 
 void ScnMgr::RenderJoin() {
@@ -236,6 +245,5 @@ void ScnMgr::UpdateRecvData(float posx, float posy, bool isvisible, int i)
 void ScnMgr::getSendData(float * posX, float * posY, bool * isVisible)
 {
 	objs[MyID]->GetLocation(posX, posY);
-	//objs[MyID]->GetVelocity(velX, velY);
 	*isVisible = objs[MyID]->GetIsVisible();
 }

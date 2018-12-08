@@ -1,6 +1,6 @@
 #pragma once
 
-#define PlAYER_NUM 4
+#define PlAYER_NUM 8
 #define BALL_NUM 8
 #define MAX_OBJECTS PlAYER_NUM + BALL_NUM
 #define HERO_ID 0

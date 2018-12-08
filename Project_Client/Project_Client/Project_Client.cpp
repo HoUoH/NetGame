@@ -315,7 +315,6 @@ DWORD WINAPI ClientMain(LPVOID arg)
 		}
 		
 	}
-	//EnableWindow(hSendButton, TRUE); // 보내기 버튼 활성화
 	SetEvent(hReadEvent); // 읽기 완료 알리기
 
 
@@ -361,16 +360,14 @@ void RenderScene(void)	//1초에 30번 출력되어야 하는 함수
 		forceX += amount;
 	
 
+
+
+
 	g_ScnMgr->ApplyForce(forceX, forceY, eTime);
-	//덜덜거리는거 없에기 위해서 일단 빼버림
-	//g_ScnMgr->BreakMovement(W_KeyIsDown, S_KeyIsDown, D_KeyIsDown, A_KeyIsDown, eTime);
 	g_ScnMgr->Update(eTime);
 	g_ScnMgr->ObjectCollision();
-
-	// 클라입장
-	// send() 하고 / 서버가 계산한 최종 위치 recv()
-
 	g_ScnMgr->RenderScene();
+
 	glutSwapBuffers();
 }
 
