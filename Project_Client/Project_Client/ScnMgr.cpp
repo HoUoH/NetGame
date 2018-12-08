@@ -118,7 +118,7 @@ void ScnMgr::RenderScene()	//1초에 최소 60번 이상 출력되어야 하는 함수
 	
 	char s1[20];
 	sprintf(s1, "Survival Time : %d", (int)GameTime);
-	glRasterPos2f(0, 0);
+	glRasterPos2f(0.3f, 0.9f);
 	
 
 	for (int i = 0; i < strlen(s1); ++i)
