@@ -54,7 +54,6 @@ void ScnMgr::InitObject()
       objs[i]->SetCoefFriction(0.5f);
       objs[i]->SetMass(1.f);
 	  objs[i]->SetVelocity(float(rand() % 6000 - 3000), float(rand() % 6000 - 3000));
-      //objs[i]->SetVelocity(1, 1);
       objs[i]->SetSize(BALL_SIZE, BALL_SIZE);
       objs[i]->SetKind(KIND_BALL);
       objs[i]->SetIsVisible(true);
@@ -94,12 +93,11 @@ void ScnMgr::Update(float elapsed_time_in_sec)
 {
    //이 부분에 서버에서 받은 데이터 objs[]에 최신화해야됨(받자마자 최신화하는 것도 방법)
 	
-   //PlAYER_NUM+1  : 오브젝트 움직임 최신화
+   //오브젝트 움직임 최신화
    for (int i = PlAYER_NUM; i < MAX_OBJECTS; ++i)
    {
         objs[i]->Update(elapsed_time_in_sec);
    }
-      //printf("사이즈 %d\n", sizeof(objs));
 }
 
 // ServerWinAPI.cpp의 ScnMgrThread에 업데이트된 sendData를 전달해주기 위한 함수
@@ -111,11 +109,8 @@ sendData_Object ScnMgr::ReturnSendData(int playerIndex)
 void ScnMgr::SetRecvedData(recvData* recvedData_InScnMgr, int playerIndex)	//recv 한 데이터를 서버에 덮어씌움
 {
 	objs[playerIndex]->SetLocation(recvedData_InScnMgr[playerIndex].posX, recvedData_InScnMgr[playerIndex].posY);
-	//objs[playerIndex]->SetVelocity(recvedData_InScnMgr[playerIndex].velX, recvedData_InScnMgr[playerIndex].velY);
 	objs[playerIndex]->SetIsVisible(recvedData_InScnMgr[playerIndex].isVisible);
-	// recvData의 specialKey값 읽어서 objs isVisible 초기화 해줘야하는 부분
 
-	//objs[playerIndex]->SetIsVisible()
 }
 
 void ScnMgr::ObjectCollision()
@@ -196,12 +191,10 @@ void ScnMgr::CollisionReaction(object* oA, object* oB)
 
 	if (oA_Kind == KIND_HERO)
 	{
-		//oA->SetInvincible_time(0.f);
 		oA->SetIsVisible(false);
 	}
 	else if (oB_Kind == KIND_HERO) 
 	{
-		//oB->SetInvincible_time(0.f);
 		oB->SetIsVisible(false);
 	}
 

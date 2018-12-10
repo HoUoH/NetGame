@@ -358,10 +358,6 @@ void RenderScene(void)	//1초에 30번 출력되어야 하는 함수
 		forceY -= amount;
 	if (D_KeyIsDown)
 		forceX += amount;
-	
-
-
-
 
 	g_ScnMgr->ApplyForce(forceX, forceY, eTime);
 	g_ScnMgr->Update(eTime);

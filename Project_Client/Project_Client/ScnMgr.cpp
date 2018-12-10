@@ -35,7 +35,7 @@ ScnMgr::ScnMgr()
 	Character_Texture[1] = m_Renderer->CreatePngTexture((char*)"./Textures/Player_2.png");
 	Character_Texture[2] = m_Renderer->CreatePngTexture((char*)"./Textures/Player_3.png");
 	Character_Texture[3] = m_Renderer->CreatePngTexture((char*)"./Textures/Player_4.png");
-	//플레이어 4명만 함 나머진 보류
+	// 현재 플레이어를 늘려서 했을 때 문제가 없는 거 같으므로 늘린다.
 	Character_Texture[4] = m_Renderer->CreatePngTexture((char*)"./Textures/Player_5.png");
 	Character_Texture[5] = m_Renderer->CreatePngTexture((char*)"./Textures/Player_6.png");
 	Character_Texture[6] = m_Renderer->CreatePngTexture((char*)"./Textures/Player_7.png");
@@ -48,7 +48,8 @@ ScnMgr::ScnMgr()
 	GameTime = 0.f;
 	Invincible_time = 0.f;
 	temp = 10.f;
-	Invincible_limit = 1;
+	//여기다 원하는 무적 시간 할당
+	Invincible_limit = 1.f;
 
 	for (int i = 0; i < PlAYER_NUM; ++i) {
 		objs[i] = new object();
@@ -140,10 +141,10 @@ void ScnMgr::Update(float elapsed_time_in_sec)
 	objs[MyID]->Update(elapsed_time_in_sec);
 	if (objs[MyID]->GetIsVisible())
 	{
-		//Invincible_time += elapsed_time_in_sec;
+		Invincible_time += elapsed_time_in_sec;
 
 		//디버깅용 무적시간
-		Invincible_time += 0;
+		//Invincible_time += 0;
 		GameTime += elapsed_time_in_sec;
 	}
 }
